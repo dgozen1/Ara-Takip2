@@ -1,0 +1,6 @@
+{
+  "appId": "com.ototakip.pro",
+  "appName": "OtoTakip Pro",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
