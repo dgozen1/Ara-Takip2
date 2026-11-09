@@ -21,19 +21,24 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background-color: var(--bg-dark); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
     
+    /* Top Header */
     header { background: rgba(30, 41, 59, 0.95); padding: 12px 16px; border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; gap: 8px; z-index: 10; }
     .vehicle-selector-wrap { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
     .vehicle-icon-badge { width: 36px; height: 36px; border-radius: 10px; background: rgba(20, 184, 166, 0.15); color: var(--accent-teal); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
     .vehicle-dropdown { background: #0f172a; color: #fff; border: 1px solid var(--card-border); padding: 7px 10px; border-radius: 8px; font-weight: 600; font-size: 13px; width: 100%; outline: none; cursor: pointer; }
-    .btn-icon-header { background: #334155; color: #fff; border: none; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; font-size: 14px; }
+    .header-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .btn-icon-header { background: #334155; color: #fff; border: none; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
     .btn-icon-header:hover { background: #475569; }
 
+    /* Main Container */
     main { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 85px; }
     
+    /* Tab Contents */
     .tab-content { display: none; }
     .tab-content.active { display: block; animation: fadeIn 0.2s ease-in-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* Summary Card Grid */
     .hero-stat-card { background: linear-gradient(145deg, #1e293b, #111827); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
     .hero-stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
     .stat-box { padding: 8px 4px; border-radius: 10px; background: rgba(255,255,255,0.03); }
@@ -44,11 +49,13 @@
     .card-title { font-size: 14px; font-weight: 700; color: #cbd5e1; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
     .card-title i { margin-right: 6px; color: var(--accent-teal); }
 
+    /* Action Buttons */
     .btn-primary { background: linear-gradient(135deg, var(--accent-teal), #0d9488); color: #fff; border: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 14px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3); }
     .btn-secondary { background: #334155; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; }
-    .btn-danger { background: #ef4444; color: #fff; border: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; width: 100%; margin-top: 8px; }
+    .btn-danger { background: #ef4444; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; }
     .btn-danger-outline { background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 6px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
 
+    /* Badges & Tags */
     .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
     .badge-teal { background: rgba(20, 184, 166, 0.15); color: var(--accent-teal); }
     .badge-blue { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); }
@@ -57,16 +64,19 @@
     .badge-green { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
     .badge-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
 
+    /* Feed List Items */
     .item-list { display: flex; flex-direction: column; gap: 10px; }
     .list-item { background: #162032; border: 1px solid #283548; border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; }
     .list-item-left { display: flex; align-items: center; gap: 12px; }
     .list-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
 
+    /* Bottom Navigation */
     nav.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.98); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 8px 0 12px; z-index: 20; backdrop-filter: blur(10px); }
     .nav-btn { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; transition: 0.2s; }
     .nav-btn i { font-size: 18px; }
     .nav-btn.active { color: var(--accent-teal); transform: translateY(-2px); }
 
+    /* Modals */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100; backdrop-filter: blur(4px); }
     .modal-overlay.active { display: flex; }
     .modal-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -74,17 +84,20 @@
     .modal-header h3 { font-size: 16px; font-weight: 700; color: #fff; }
     .btn-close { background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; }
 
+    /* Form Fields */
     .form-group { margin-bottom: 14px; }
     .form-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
     .form-control { width: 100%; background: #0f172a; border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 14px; outline: none; }
     .form-control:focus { border-color: var(--accent-teal); }
     .form-hint { font-size: 11px; color: var(--accent-blue); margin-top: 4px; }
 
+    /* Metric Key-Value Rows */
     .metric-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .metric-row:last-child { border-bottom: none; }
     .metric-title { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
     .metric-value { font-size: 14px; font-weight: 700; color: #fff; text-align: right; }
     
+    /* Toggle Tabs Inside Garage */
     .sub-tabs { display: flex; background: #0f172a; border-radius: 10px; padding: 4px; margin-bottom: 14px; border: 1px solid var(--card-border); }
     .sub-tab-btn { flex: 1; background: transparent; border: none; color: var(--text-muted); padding: 8px; font-size: 12px; font-weight: 600; border-radius: 7px; cursor: pointer; transition: 0.2s; }
     .sub-tab-btn.active { background: #334155; color: #fff; }
@@ -98,8 +111,11 @@
       <div class="vehicle-icon-badge" id="vehicleIconBadge"><i class="fa-solid fa-car-side"></i></div>
       <select id="vehicleSelect" class="vehicle-dropdown" onchange="app.selectVehicle(this.value)"></select>
     </div>
-    <button class="btn-icon-header" onclick="app.openEditVehicleModal()" title="Seçili Aracı Düzenle"><i class="fa-solid fa-pen"></i></button>
-    <button class="btn-icon-header" onclick="app.openModal('modalVehicle')" title="Yeni Araç Ekle"><i class="fa-solid fa-plus"></i></button>
+    <div class="header-actions">
+      <button class="btn-icon-header" onclick="app.openModal('modalBackup')" title="Veri Yedekle / Geri Yükle"><i class="fa-solid fa-cloud-arrow-up"></i></button>
+      <button class="btn-icon-header" onclick="app.openEditVehicleModal()" title="Seçili Aracı Düzenle"><i class="fa-solid fa-pen"></i></button>
+      <button class="btn-icon-header" onclick="app.openAddVehicleModal()" title="Yeni Araç Ekle"><i class="fa-solid fa-plus"></i></button>
+    </div>
   </header>
 
   <!-- Main Views Container -->
@@ -124,7 +140,7 @@
             <div class="stat-label">Toplam Mesafe</div>
           </div>
           <div class="stat-box">
-            <div class="stat-val" style="color:var(--accent-purple);" id="dashTotalSpend">-</div>
+            <div class="stat-val" style="color:var(--accent-purple);" id="dashTotalSpend">0 ₺</div>
             <div class="stat-label">Toplam Harcama</div>
           </div>
         </div>
@@ -144,8 +160,8 @@
           <div id="benzinBar" style="background:#38bdf8; width:50%; transition:width 0.3s;"></div>
         </div>
         <div style="display:flex; justify-content:space-between; font-size:12px;">
-          <span style="color:var(--accent-purple);"><i class="fa-solid fa-circle" style="font-size:8px;"></i> LPG: <b id="lpgRatio">50%</b></span>
-          <span style="color:var(--accent-blue);"><i class="fa-solid fa-circle" style="font-size:8px;"></i> Benzin: <b id="benzinRatio">50%</b></span>
+          <span style="color:var(--accent-purple);"><i class="fa-solid fa-circle" style="font-size:8px;"></i> LPG: <b id="lpgRatio">0 ₺</b></span>
+          <span style="color:var(--accent-blue);"><i class="fa-solid fa-circle" style="font-size:8px;"></i> Benzin: <b id="benzinRatio">0 ₺</b></span>
         </div>
       </div>
 
@@ -198,6 +214,7 @@
         <button class="sub-tab-btn" onclick="app.switchGarageSubTab('maint', this)"><i class="fa-solid fa-wrench"></i> Bakım & Servis</button>
       </div>
 
+      <!-- Garage Sub 1: Documents & Dates -->
       <div id="garageSubDocs">
         <div class="card">
           <div class="card-title">
@@ -232,6 +249,7 @@
         </div>
       </div>
 
+      <!-- Garage Sub 2: Maintenance Records -->
       <div id="garageSubMaint" style="display:none;">
         <button class="btn-primary" style="margin-bottom:14px;" onclick="app.openModal('modalMaint')">
           <i class="fa-solid fa-wrench"></i> Servis / Bakım Kaydı Ekle
@@ -244,7 +262,28 @@
     <section id="tab-reports" class="tab-content">
       <div class="card" style="border-left:4px solid var(--accent-teal);">
         <h2 style="font-size:16px; font-weight:700; margin-bottom:4px;">Analitik Raporlar ve Öngörüler</h2>
-        <div style="font-size:12px; color:var(--text-muted);">Sürüş verileriniz ve sayaç modellerine dayalı tahminler</div>
+        <div style="font-size:12px; color:var(--text-muted);">Sürüş, yakıt ve servis geçmişine dayalı hesaplamalar</div>
+      </div>
+
+      <!-- YENİ EKLENEN: SERVİS & BAKIM MALİYET ANALİZİ -->
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-wrench"></i> Servis, Bakım ve Toplam Araç Gideri</div>
+        <div class="metric-row">
+          <div class="metric-title"><i class="fa-solid fa-screwdriver-wrench"></i> Toplam Bakım/Servis Harcaması</div>
+          <div class="metric-value" style="color:var(--accent-amber);" id="repTotalMaintSpend">0 ₺</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-title"><i class="fa-solid fa-receipt"></i> Servis Başına Ortalama Tutar</div>
+          <div class="metric-value" id="repAvgMaintSpend">-</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-title"><i class="fa-solid fa-wallet"></i> Toplam Araç Masrafı (Yakıt + Bakım)</div>
+          <div class="metric-value" style="color:var(--accent-rose);" id="repTotalCarExpense">0 ₺</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-title"><i class="fa-solid fa-calculator"></i> Gerçek Maliyet (Yakıt + Bakım/KM)</div>
+          <div class="metric-value" style="color:var(--accent-teal);" id="repRealCostPerKm">0.00 ₺/km</div>
+        </div>
       </div>
 
       <div class="card">
@@ -312,14 +351,43 @@
 
   <!-- MODALS -->
 
-  <!-- Modal: Vehicle Add -->
+  <!-- Modal: Backup & Restore (Download / Upload) -->
+  <div class="modal-overlay" id="modalBackup">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Veri Yedekleme & Geri Yükleme</h3>
+        <button class="btn-close" onclick="app.closeModal('modalBackup')">&times;</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <!-- Download -->
+        <div class="card" style="margin-bottom:0; background:#0f172a;">
+          <div style="font-weight:700; font-size:14px; margin-bottom:4px;"><i class="fa-solid fa-download" style="color:var(--accent-teal);"></i> Verileri İndir (Download)</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Tüm araçlarınızı, yakıt, rota ve servis kayıtlarınızı güvenli bir JSON dosyası olarak telefonunuza kaydedin.</div>
+          <button class="btn-primary" onclick="app.downloadBackup()"><i class="fa-solid fa-file-arrow-down"></i> Yedeği İndir (.json)</button>
+        </div>
+
+        <!-- Upload -->
+        <div class="card" style="margin-bottom:0; background:#0f172a;">
+          <div style="font-weight:700; font-size:14px; margin-bottom:4px;"><i class="fa-solid fa-upload" style="color:var(--accent-blue);"></i> Verileri Geri Yükle (Upload)</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Başka bir telefondan aldığınız yedek dosyasını seçerek tüm verilerinizi anında bu uygulamaya aktarın.</div>
+          <input type="file" id="backupFileInput" accept=".json" style="display:none;" onchange="app.handleRestoreFile(event)">
+          <button class="btn-secondary" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="document.getElementById('backupFileInput').click()">
+            <i class="fa-solid fa-file-import"></i> Yedek Dosyası Seç ve Yükle
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Vehicle Add / Edit -->
   <div class="modal-overlay" id="modalVehicle">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>Yeni Araç Ekle</h3>
+        <h3 id="modalVehicleTitle">Yeni Araç Ekle</h3>
         <button class="btn-close" onclick="app.closeModal('modalVehicle')">&times;</button>
       </div>
-      <form onsubmit="app.saveVehicle(event)">
+      <form onsubmit="app.handleVehicleFormSubmit(event)">
+        <input type="hidden" id="vEditId">
         <div class="form-group">
           <label class="form-label">Plaka</label>
           <input type="text" class="form-control" id="vPlaka" placeholder="Örn: 20 ABC 123" required style="text-transform:uppercase;">
@@ -330,7 +398,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Yakıt / Enerji Türü</label>
-          <select class="form-control" id="vType" onchange="app.handleVehicleTypeChange(this.value, 'groupMainCapacity', 'lblMainCapacity', 'groupLpgCapacity')">
+          <select class="form-control" id="vType" onchange="app.handleVehicleTypeChange(this.value)">
             <option value="Dizel">Dizel</option>
             <option value="Benzin">Benzin</option>
             <option value="Benzin + LPG">Benzin + LPG</option>
@@ -346,47 +414,11 @@
           <label class="form-label">LPG Tank Kapasitesi (Litre)</label>
           <input type="number" step="0.1" class="form-control" id="vCapLpg" placeholder="Örn: 42">
         </div>
-        <button type="submit" class="btn-primary" style="margin-top:10px;"><i class="fa-solid fa-check"></i> Aracı Kaydet</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Modal: Vehicle Edit & Delete -->
-  <div class="modal-overlay" id="modalEditVehicle">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3>Aracı Düzenle / Sil</h3>
-        <button class="btn-close" onclick="app.closeModal('modalEditVehicle')">&times;</button>
-      </div>
-      <form onsubmit="app.updateVehicle(event)">
-        <div class="form-group">
-          <label class="form-label">Plaka</label>
-          <input type="text" class="form-control" id="edVPlaka" required style="text-transform:uppercase;">
+        
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:14px;">
+          <button type="submit" class="btn-primary" id="btnVehicleSubmit"><i class="fa-solid fa-check"></i> Aracı Kaydet</button>
+          <button type="button" class="btn-danger" id="btnDeleteVehicle" style="display:none;" onclick="app.deleteCurrentVehicle()"><i class="fa-solid fa-trash"></i> Aracı ve Tüm Verilerini Sil</button>
         </div>
-        <div class="form-group">
-          <label class="form-label">Marka ve Model</label>
-          <input type="text" class="form-control" id="edVModel" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Yakıt / Enerji Türü</label>
-          <select class="form-control" id="edVType" onchange="app.handleVehicleTypeChange(this.value, 'edGroupMainCapacity', 'edLblMainCapacity', 'edGroupLpgCapacity')">
-            <option value="Dizel">Dizel</option>
-            <option value="Benzin">Benzin</option>
-            <option value="Benzin + LPG">Benzin + LPG</option>
-            <option value="Elektrik">Elektrik (EV)</option>
-            <option value="Hibrit">Hibrit (Benzin)</option>
-          </select>
-        </div>
-        <div class="form-group" id="edGroupMainCapacity">
-          <label class="form-label" id="edLblMainCapacity">Depo Kapasitesi (Litre)</label>
-          <input type="number" step="0.1" class="form-control" id="edVCapMain" required>
-        </div>
-        <div class="form-group" id="edGroupLpgCapacity" style="display:none;">
-          <label class="form-label">LPG Tank Kapasitesi (Litre)</label>
-          <input type="number" step="0.1" class="form-control" id="edVCapLpg">
-        </div>
-        <button type="submit" class="btn-primary" style="margin-top:10px;"><i class="fa-solid fa-save"></i> Değişiklikleri Kaydet</button>
-        <button type="button" class="btn-danger" onclick="app.deleteCurrentVehicle()"><i class="fa-solid fa-trash"></i> Bu Aracı Tamamen Sil</button>
       </form>
     </div>
   </div>
@@ -548,13 +580,14 @@
         </div>
         <div class="form-group">
           <label class="form-label">Yapılan İşlemler / Parça Notları</label>
-          <textarea class="form-control" id="mNotes" rows="2" placeholder="5W-30 Motor yağı, yağ ve polen filtresi değişti..."></textarea>
+          <textarea class="form-control" id="mNotes" rows="2" placeholder="5W-30 Motor yağı, filtreler değişti..."></textarea>
         </div>
         <button type="submit" class="btn-primary"><i class="fa-solid fa-wrench"></i> Servis Kaydını Kaydet</button>
       </form>
     </div>
   </div>
 
+  <!-- APPLICATION SCRIPT LOGIC -->
   <script>
     class OtoTakipEngine {
       constructor() {
@@ -612,7 +645,7 @@
             { id: 'r1', vehicleId: 'v1', date: '2026-10-28', from: 'Denizli', to: 'İzmir', km: 235, volume: 12.9, cost: 593 }
           ],
           maintenances: [
-            { id: 'm1', vehicleId: 'v1', type: 'Periyodik Bakım', date: '2026-08-10', km: 140000, service: 'Denizli Özel Servis', cost: 3200, nextKm: 155000, notes: 'Yağ, polen, hava, mazot filtresi' }
+            { id: 'm1', vehicleId: 'v1', type: 'Periyodik Bakım', date: '2026-08-10', km: 140000, service: 'Özel Servis', cost: 3200, nextKm: 155000, notes: 'Yağ ve filtreler' }
           ],
           activeVehicleId: 'v1'
         };
@@ -636,3 +669,884 @@
           if (el) el.value = today;
         });
       }
+
+      renderVehicleSelect() {
+        const select = document.getElementById('vehicleSelect');
+        select.innerHTML = '';
+        if (this.data.vehicles.length === 0) {
+          const opt = document.createElement('option');
+          opt.textContent = 'Kayıtlı Araç Yok';
+          select.appendChild(opt);
+          return;
+        }
+        this.data.vehicles.forEach(v => {
+          const opt = document.createElement('option');
+          opt.value = v.id;
+          opt.textContent = `${v.plaka} - ${v.markaModel}`;
+          if (v.id === this.activeVehicleId) opt.selected = true;
+          select.appendChild(opt);
+        });
+      }
+
+      selectVehicle(id) {
+        this.activeVehicleId = id;
+        this.saveStorage();
+        this.renderAll();
+      }
+
+      renderAll() {
+        const veh = this.getActiveVehicle();
+        if (!veh) {
+          document.getElementById('dashCostPerKm').innerHTML = '0.00 ₺';
+          document.getElementById('dashPer100').textContent = '-';
+          document.getElementById('dashTotalKm').textContent = '-';
+          document.getElementById('dashTotalSpend').textContent = '0 ₺';
+          document.getElementById('fuelHistoryList').innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:16px;">Lütfen araç ekleyin.</div>';
+          return;
+        }
+
+        const iconBadge = document.getElementById('vehicleIconBadge');
+        if (veh.yakitTuru === 'Elektrik') {
+          iconBadge.innerHTML = '<i class="fa-solid fa-bolt" style="color:#22c55e;"></i>';
+        } else {
+          iconBadge.innerHTML = '<i class="fa-solid fa-car-side"></i>';
+        }
+
+        this.renderDashboard();
+        this.renderKmLogs();
+        this.renderRoutes();
+        this.renderGarage();
+        this.renderReports();
+      }
+
+      getVehicleFuels() {
+        return this.data.fuels
+          .filter(f => f.vehicleId === this.activeVehicleId)
+          .sort((a,b) => a.km - b.km);
+      }
+
+      getVehicleMaintenances() {
+        return this.data.maintenances
+          .filter(m => m.vehicleId === this.activeVehicleId)
+          .sort((a,b) => b.km - a.km);
+      }
+
+      renderDashboard() {
+        const veh = this.getActiveVehicle();
+        const fuels = this.getVehicleFuels();
+        const isEv = veh.yakitTuru === 'Elektrik';
+        const unit = isEv ? 'kWh' : 'LT';
+
+        // Depo badge
+        const cap = veh.depoKapasitesi + (veh.lpgKapasitesi > 0 ? ` + ${veh.lpgKapasitesi} LPG` : '');
+        document.getElementById('dashCapacityBadge').innerHTML = `<i class="fa-solid fa-gas-pump"></i> Kapasite: ${cap} ${unit}`;
+
+        // Toplam Yakıt Harcaması
+        const totalActualSpent = fuels.reduce((acc, cur) => acc + (Number(cur.cost) || 0), 0);
+        document.getElementById('dashTotalSpend').textContent = `${Math.round(totalActualSpent).toLocaleString('tr-TR')} ₺`;
+
+        if (fuels.length < 2) {
+          document.getElementById('dashCostPerKm').innerHTML = '0.00 ₺<span style="font-size:13px; font-weight:500; color:var(--text-muted);">/km</span>';
+          document.getElementById('dashPer100').textContent = '-';
+          document.getElementById('dashTotalKm').textContent = '-';
+        } else {
+          const totalKm = fuels[fuels.length - 1].km - fuels[0].km;
+          let sumVolume = 0;
+          let sumCost = 0;
+          for (let i = 1; i < fuels.length; i++) {
+            sumVolume += Number(fuels[i].volume) || 0;
+            sumCost += Number(fuels[i].cost) || 0;
+          }
+          const costPerKm = totalKm > 0 ? (sumCost / totalKm) : 0;
+          const volPer100 = totalKm > 0 ? ((sumVolume / totalKm) * 100) : 0;
+
+          document.getElementById('dashCostPerKm').innerHTML = `${costPerKm.toFixed(2)} ₺<span style="font-size:13px; font-weight:500; color:var(--text-muted);">/km</span>`;
+          document.getElementById('dashPer100').textContent = `${volPer100.toFixed(1)} ${unit}`;
+          document.getElementById('dashTotalKm').textContent = `${totalKm.toLocaleString('tr-TR')} km`;
+        }
+
+        // Dual Fuel Card
+        const dualCard = document.getElementById('dualFuelCard');
+        if (veh.yakitTuru === 'Benzin + LPG') {
+          dualCard.style.display = 'block';
+          const lpgCost = fuels.filter(f => f.subType === 'LPG').reduce((s,f) => s + (Number(f.cost) || 0), 0);
+          const bznCost = fuels.filter(f => f.subType === 'Benzin').reduce((s,f) => s + (Number(f.cost) || 0), 0);
+          const totalDual = lpgCost + bznCost;
+          
+          if (totalDual > 0) {
+            const lpgP = Math.round((lpgCost / totalDual) * 100);
+            const bznP = 100 - lpgP;
+            document.getElementById('lpgBar').style.width = lpgP + '%';
+            document.getElementById('benzinBar').style.width = bznP + '%';
+            document.getElementById('lpgRatio').textContent = `%${lpgP} (${Math.round(lpgCost).toLocaleString('tr-TR')} ₺)`;
+            document.getElementById('benzinRatio').textContent = `%${bznP} (${Math.round(bznCost).toLocaleString('tr-TR')} ₺)`;
+          } else {
+            document.getElementById('lpgBar').style.width = '50%';
+            document.getElementById('benzinBar').style.width = '50%';
+            document.getElementById('lpgRatio').textContent = '0 ₺';
+            document.getElementById('benzinRatio').textContent = '0 ₺';
+          }
+        } else {
+          dualCard.style.display = 'none';
+        }
+
+        // Fuel History List
+        const feed = document.getElementById('fuelHistoryList');
+        document.getElementById('fuelCountLabel').textContent = `${fuels.length} dolum`;
+        feed.innerHTML = '';
+        if (fuels.length === 0) {
+          feed.innerHTML = '<div style="color:var(--text-muted); font-size:13px; text-align:center; padding:12px;">Henüz yakıt kaydı bulunmuyor.</div>';
+          return;
+        }
+
+        const rev = [...fuels].reverse();
+        rev.forEach((item, idx) => {
+          const origIdx = fuels.length - 1 - idx;
+          let diffKmText = '';
+          if (origIdx > 0) {
+            const diff = item.km - fuels[origIdx - 1].km;
+            const diffPerKmCost = diff > 0 ? (item.cost / diff).toFixed(2) : '0';
+            diffKmText = `<span class="badge badge-teal">+${diff} km (${diffPerKmCost} ₺/km)</span>`;
+          }
+
+          const badgeColor = item.subType === 'LPG' ? 'badge-purple' : (item.subType === 'Elektrik' ? 'badge-green' : 'badge-blue');
+          const unitPrice = item.volume > 0 ? (item.cost / item.volume).toFixed(2) : '0';
+
+          const el = document.createElement('div');
+          el.className = 'list-item';
+          el.innerHTML = `
+            <div class="list-item-left">
+              <div class="list-icon" style="background:rgba(20, 184, 166, 0.15); color:var(--accent-teal);">
+                <i class="fa-solid fa-gas-pump"></i>
+              </div>
+              <div>
+                <div style="font-weight:700; font-size:14px;">${item.km.toLocaleString('tr-TR')} KM <span class="badge ${badgeColor}" style="margin-left:4px;">${item.subType || veh.yakitTuru}</span></div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+                  ${item.date} • ${item.volume} ${unit} (Birim: ${unitPrice} ₺)
+                </div>
+                ${diffKmText ? `<div style="margin-top:4px;">${diffKmText}</div>` : ''}
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:800; font-size:15px; color:#fff;">${Number(item.cost).toLocaleString('tr-TR')} ₺</div>
+              <button class="btn-danger-outline" style="margin-top:6px;" onclick="app.deleteFuel('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          `;
+          feed.appendChild(el);
+        });
+      }
+
+      renderKmLogs() {
+        const list = document.getElementById('kmLogList');
+        const logs = this.data.kmLogs
+          .filter(k => k.vehicleId === this.activeVehicleId)
+          .sort((a,b) => b.km - a.km);
+
+        list.innerHTML = '';
+        if (logs.length === 0) {
+          list.innerHTML = '<div style="color:var(--text-muted); font-size:13px; text-align:center; padding:16px;">Kayıtlı ara sayaç bilgisi yok.</div>';
+          return;
+        }
+
+        logs.forEach(log => {
+          const el = document.createElement('div');
+          el.className = 'list-item';
+          el.innerHTML = `
+            <div class="list-item-left">
+              <div class="list-icon" style="background:rgba(56, 189, 248, 0.15); color:var(--accent-blue);">
+                <i class="fa-solid fa-gauge"></i>
+              </div>
+              <div>
+                <div style="font-weight:700; font-size:15px;">${log.km.toLocaleString('tr-TR')} KM</div>
+                <div style="font-size:11px; color:var(--text-muted);">${log.date} ${log.note ? '• ' + log.note : ''}</div>
+              </div>
+            </div>
+            <button class="btn-danger-outline" onclick="app.deleteKmLog('${log.id}')"><i class="fa-solid fa-trash"></i></button>
+          `;
+          list.appendChild(el);
+        });
+      }
+
+      renderRoutes() {
+        const list = document.getElementById('routeList');
+        const veh = this.getActiveVehicle();
+        if (!veh) return;
+        const fuels = this.getVehicleFuels();
+        const routes = this.data.routes.filter(r => r.vehicleId === this.activeVehicleId);
+        const isEv = veh.yakitTuru === 'Elektrik';
+        const unit = isEv ? 'kWh' : 'LT';
+
+        let activePer100 = 6.0;
+        let lastUnitPrice = 45.0;
+        if (fuels.length >= 2) {
+          const totKm = fuels[fuels.length - 1].km - fuels[0].km;
+          let sumVol = 0;
+          for (let i = 1; i < fuels.length; i++) sumVol += (Number(fuels[i].volume) || 0);
+          if (totKm > 0) activePer100 = (sumVol / totKm) * 100;
+        }
+        if (fuels.length > 0) {
+          const lastF = fuels[fuels.length - 1];
+          if (lastF.volume > 0) lastUnitPrice = lastF.cost / lastF.volume;
+        }
+
+        document.getElementById('routeRefConsumption').textContent = `${activePer100.toFixed(1)} ${unit}/100 km`;
+        document.getElementById('routeRefPrice').textContent = `${lastUnitPrice.toFixed(2)} ₺/${unit}`;
+
+        list.innerHTML = '';
+        if (routes.length === 0) {
+          list.innerHTML = '<div style="color:var(--text-muted); font-size:13px; text-align:center; padding:16px;">Kayıtlı rota bulunmuyor.</div>';
+          return;
+        }
+
+        routes.forEach(r => {
+          const el = document.createElement('div');
+          el.className = 'list-item';
+          el.innerHTML = `
+            <div class="list-item-left">
+              <div class="list-icon" style="background:rgba(245, 158, 11, 0.15); color:var(--accent-amber);">
+                <i class="fa-solid fa-route"></i>
+              </div>
+              <div>
+                <div style="font-weight:700; font-size:14px;">${r.from} ➔ ${r.to}</div>
+                <div style="font-size:11px; color:var(--text-muted);">${r.date} • ${r.km} km (${r.volume} ${unit})</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:800; font-size:15px; color:var(--accent-teal);">${Number(r.cost).toLocaleString('tr-TR')} ₺</div>
+              <button class="btn-danger-outline" style="margin-top:6px;" onclick="app.deleteRoute('${r.id}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          `;
+          list.appendChild(el);
+        });
+      }
+
+      calcLiveRoute(distVal) {
+        const d = parseFloat(distVal);
+        if (isNaN(d) || d <= 0) {
+          document.getElementById('routeLiveVol').textContent = '-';
+          document.getElementById('routeLiveCost').textContent = '-';
+          return;
+        }
+        const veh = this.getActiveVehicle();
+        if (!veh) return;
+        const fuels = this.getVehicleFuels();
+        const isEv = veh.yakitTuru === 'Elektrik';
+        const unit = isEv ? 'kWh' : 'LT';
+
+        let per100 = 6.0;
+        let unitPrice = 45.0;
+        if (fuels.length >= 2) {
+          const totKm = fuels[fuels.length - 1].km - fuels[0].km;
+          let sumVol = 0;
+          for (let i = 1; i < fuels.length; i++) sumVol += (Number(fuels[i].volume) || 0);
+          if (totKm > 0) per100 = (sumVol / totKm) * 100;
+        }
+        if (fuels.length > 0) {
+          const lastF = fuels[fuels.length - 1];
+          if (lastF.volume > 0) unitPrice = lastF.cost / lastF.volume;
+        }
+
+        const needVol = (d * per100) / 100;
+        const totCost = needVol * unitPrice;
+        document.getElementById('routeLiveVol').textContent = `${needVol.toFixed(1)} ${unit}`;
+        document.getElementById('routeLiveCost').textContent = `${totCost.toFixed(2)} ₺`;
+      }
+
+      renderGarage() {
+        const veh = this.getActiveVehicle();
+        if (!veh) return;
+        if (!veh.docs) veh.docs = {};
+
+        const getDaysLeft = (targetDateStr) => {
+          if (!targetDateStr) return null;
+          const diffMs = new Date(targetDateStr) - new Date();
+          return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        };
+
+        const renderExpiryBadge = (days) => {
+          if (days === null) return '<span class="badge" style="background:#334155; color:#94a3b8;">Tarih Yok</span>';
+          if (days < 0) return `<span class="badge badge-red"><i class="fa-solid fa-triangle-exclamation"></i> ${Math.abs(days)} gün geçti</span>`;
+          if (days <= 30) return `<span class="badge badge-amber"><i class="fa-solid fa-clock"></i> ${days} gün kaldı</span>`;
+          return `<span class="badge badge-green"><i class="fa-solid fa-check"></i> ${days} gün var</span>`;
+        };
+
+        // Sigorta
+        const sig = veh.docs.sigorta || {};
+        const sigDays = getDaysLeft(sig.bitis);
+        document.getElementById('sigortaCardContent').innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-weight:700; font-size:14px;">${sig.sirket || 'Belirtilmedi'}</div>
+              <div style="font-size:12px; color:var(--text-muted);">Bitiş: ${sig.bitis || '-'} • Prim: ${sig.tutar ? sig.tutar + ' ₺' : '-'}</div>
+            </div>
+            <div>${renderExpiryBadge(sigDays)}</div>
+          </div>
+        `;
+
+        // Kasko
+        const kas = veh.docs.kasko || {};
+        const kasDays = getDaysLeft(kas.bitis);
+        document.getElementById('kaskoCardContent').innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-weight:700; font-size:14px;">${kas.sirket || 'Belirtilmedi'}</div>
+              <div style="font-size:12px; color:var(--text-muted);">Bitiş: ${kas.bitis || '-'} • Tutar: ${kas.tutar ? kas.tutar + ' ₺' : '-'}</div>
+            </div>
+            <div>${renderExpiryBadge(kasDays)}</div>
+          </div>
+        `;
+
+        // Muayene
+        const muay = veh.docs.muayene || {};
+        const muayDays = getDaysLeft(muay.bitis);
+        document.getElementById('muayeneCardContent').innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-weight:700; font-size:14px;">TÜVTÜRK Vize Bitiş: ${muay.bitis || '-'}</div>
+              <div style="font-size:12px; color:var(--text-muted);">${muay.istasyon || 'İstasyon notu yok'}</div>
+            </div>
+            <div>${renderExpiryBadge(muayDays)}</div>
+          </div>
+        `;
+
+        // Ruhsat
+        const ruh = veh.docs.ruhsat || {};
+        document.getElementById('ruhsatCardContent').innerHTML = `
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
+            <div><span style="color:var(--text-muted);">Şasi No:</span> <b style="color:#fff;">${ruh.sasiNo || '-'}</b></div>
+            <div><span style="color:var(--text-muted);">Motor No:</span> <b style="color:#fff;">${ruh.motorNo || '-'}</b></div>
+            <div><span style="color:var(--text-muted);">Seri No:</span> <b style="color:#fff;">${ruh.seriNo || '-'}</b></div>
+            <div><span style="color:var(--text-muted);">Kapasite:</span> <b style="color:#fff;">${veh.depoKapasitesi} LT</b></div>
+          </div>
+        `;
+
+        // Maintenance Feed
+        const mFeed = document.getElementById('maintHistoryList');
+        const maints = this.getVehicleMaintenances();
+
+        mFeed.innerHTML = '';
+        if (maints.length === 0) {
+          mFeed.innerHTML = '<div style="color:var(--text-muted); font-size:13px; text-align:center; padding:16px;">Servis veya periyodik bakım kaydı bulunmuyor.</div>';
+          return;
+        }
+
+        maints.forEach(m => {
+          const el = document.createElement('div');
+          el.className = 'list-item';
+          el.innerHTML = `
+            <div class="list-item-left">
+              <div class="list-icon" style="background:rgba(20, 184, 166, 0.15); color:var(--accent-teal);">
+                <i class="fa-solid fa-wrench"></i>
+              </div>
+              <div>
+                <div style="font-weight:700; font-size:14px;">${m.type} • ${m.km.toLocaleString('tr-TR')} KM</div>
+                <div style="font-size:11px; color:var(--text-muted);">${m.date} | ${m.service || 'Servis'}</div>
+                ${m.nextKm ? `<div style="font-size:11px; color:var(--accent-teal); margin-top:3px;"><i class="fa-solid fa-arrow-right"></i> Sonraki Hedef: ${m.nextKm.toLocaleString('tr-TR')} KM</div>` : ''}
+                ${m.notes ? `<div style="font-size:11px; color:#cbd5e1; margin-top:4px;">"${m.notes}"</div>` : ''}
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:800; font-size:14px; color:#fff;">${m.cost ? Number(m.cost).toLocaleString('tr-TR') + ' ₺' : '-'}</div>
+              <button class="btn-danger-outline" style="margin-top:6px;" onclick="app.deleteMaint('${m.id}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          `;
+          mFeed.appendChild(el);
+        });
+      }
+
+      renderReports() {
+        const veh = this.getActiveVehicle();
+        if (!veh) return;
+        const fuels = this.getVehicleFuels();
+        const maints = this.getVehicleMaintenances();
+        const isEv = veh.yakitTuru === 'Elektrik';
+        const unit = isEv ? 'kWh' : 'LT';
+
+        // 1. SERVİS VE BAKIM MALİYETLERİ HESAPLAMA
+        const totalMaintSpend = maints.reduce((sum, m) => sum + (Number(m.cost) || 0), 0);
+        const avgMaintSpend = maints.length > 0 ? (totalMaintSpend / maints.length) : 0;
+        const totalFuelSpend = fuels.reduce((sum, f) => sum + (Number(f.cost) || 0), 0);
+        const grandTotalCarExpense = totalFuelSpend + totalMaintSpend;
+
+        document.getElementById('repTotalMaintSpend').textContent = `${Math.round(totalMaintSpend).toLocaleString('tr-TR')} ₺ (${maints.length} işlem)`;
+        document.getElementById('repAvgMaintSpend').textContent = maints.length > 0 ? `${Math.round(avgMaintSpend).toLocaleString('tr-TR')} ₺/servis` : '-';
+        document.getElementById('repTotalCarExpense').textContent = `${Math.round(grandTotalCarExpense).toLocaleString('tr-TR')} ₺`;
+
+        // Toplam KM üzerinden Gerçek KM Başı Masraf (Yakıt + Bakım)
+        if (fuels.length >= 2) {
+          const totalKm = fuels[fuels.length - 1].km - fuels[0].km;
+          if (totalKm > 0) {
+            let sumFuelCost = 0;
+            for (let i = 1; i < fuels.length; i++) sumFuelCost += Number(fuels[i].cost) || 0;
+            const realCostPerKm = (sumFuelCost + totalMaintSpend) / totalKm;
+            document.getElementById('repRealCostPerKm').textContent = `${realCostPerKm.toFixed(2)} ₺/km`;
+          } else {
+            document.getElementById('repRealCostPerKm').textContent = `0.00 ₺/km`;
+          }
+        } else {
+          document.getElementById('repRealCostPerKm').textContent = `En az 2 dolum gerekir`;
+        }
+
+        // 2. TÜKETİM VE GELECEK TAHMİNLERİ
+        if (fuels.length < 2) {
+          ['repDailyConsumption','repDailyKm','repDailyCost','repRefuelDistance','repOneYearKm','repRefuelRoutine','repNextRefuelDate','repFullTankRange','repPriceCompare','repPriceDiffBadge']
+            .forEach(id => {
+              const el = document.getElementById(id);
+              if (el) el.textContent = 'En az 2 yakıt alımı gerekir';
+            });
+          return;
+        }
+
+        const first = fuels[0];
+        const last = fuels[fuels.length - 1];
+
+        const d1 = new Date(first.date);
+        const d2 = new Date(last.date);
+        const daysDiff = Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
+        const kmDiff = last.km - first.km;
+
+        let totalSubVol = 0;
+        let totalSubCost = 0;
+        for (let i = 1; i < fuels.length; i++) {
+          totalSubVol += Number(fuels[i].volume) || 0;
+          totalSubCost += Number(fuels[i].cost) || 0;
+        }
+
+        const dailyKm = kmDiff / daysDiff;
+        const dailyVol = totalSubVol / daysDiff;
+        const dailyCost = totalSubCost / daysDiff;
+        document.getElementById('repDailyConsumption').textContent = `${dailyVol.toFixed(2)} ${unit}/gün`;
+        document.getElementById('repDailyKm').textContent = `${dailyKm.toFixed(1)} km/gün`;
+        document.getElementById('repDailyCost').textContent = `${dailyCost.toFixed(2)} ₺/gün`;
+
+        const refuelIntervalKm = kmDiff / (fuels.length - 1);
+        document.getElementById('repRefuelDistance').textContent = `${Math.round(refuelIntervalKm)} km`;
+
+        const allLogs = this.data.kmLogs.filter(k => k.vehicleId === this.activeVehicleId);
+        const highestKm = Math.max(last.km, ...allLogs.map(l => l.km));
+        const oneYearKm = Math.round(highestKm + (dailyKm * 365));
+        document.getElementById('repOneYearKm').textContent = `${oneYearKm.toLocaleString('tr-TR')} KM (+${Math.round(dailyKm * 365).toLocaleString('tr-TR')} km)`;
+
+        const routineDays = Math.max(1, Math.round(daysDiff / (fuels.length - 1)));
+        document.getElementById('repRefuelRoutine').textContent = `Ortalama her ${routineDays} günde bir`;
+
+        const nextDate = new Date(d2);
+        nextDate.setDate(nextDate.getDate() + routineDays);
+        document.getElementById('repNextRefuelDate').textContent = nextDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+        const per100 = (totalSubVol / kmDiff) * 100;
+        const tankCap = (Number(veh.depoKapasitesi) || 0) + (Number(veh.lpgKapasitesi) || 0);
+        const fullTankRange = per100 > 0 ? ((tankCap / per100) * 100) : 0;
+        document.getElementById('repFullTankRange').textContent = `~ ${Math.round(fullTankRange)} km (${tankCap} ${unit} ile)`;
+
+        const firstPrice = first.volume > 0 ? (first.cost / first.volume) : 0;
+        const lastPrice = last.volume > 0 ? (last.cost / last.volume) : 0;
+        const priceDiff = lastPrice - firstPrice;
+        const pctDiff = firstPrice > 0 ? ((priceDiff / firstPrice) * 100) : 0;
+
+        document.getElementById('repPriceCompare').textContent = `${firstPrice.toFixed(2)} ₺ ➔ ${lastPrice.toFixed(2)} ₺`;
+        if (priceDiff > 0) {
+          document.getElementById('repPriceDiffBadge').innerHTML = `<span class="badge badge-red">+${priceDiff.toFixed(2)} ₺ (+%${pctDiff.toFixed(1)}) Artış</span>`;
+        } else if (priceDiff < 0) {
+          document.getElementById('repPriceDiffBadge').innerHTML = `<span class="badge badge-green">${priceDiff.toFixed(2)} ₺ (%${pctDiff.toFixed(1)}) Düşüş</span>`;
+        } else {
+          document.getElementById('repPriceDiffBadge').innerHTML = `<span class="badge badge-blue">Sabit Değişmedi</span>`;
+        }
+      }
+
+      // BACKUP & RESTORE (DOWNLOAD & UPLOAD)
+      downloadBackup() {
+        const jsonStr = JSON.stringify(this.data, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const dateStr = new Date().toISOString().split('T')[0];
+        a.href = url;
+        a.download = `OtoTakip_Yedek_${dateStr}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      handleRestoreFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const parsed = JSON.parse(e.target.result);
+            if (!parsed.vehicles || !Array.isArray(parsed.vehicles)) {
+              alert('Hatalı veya uyumsuz yedek dosyası!');
+              return;
+            }
+            if (confirm('Seçilen yedek yüklenecektir. Mevcut verileriniz bu yedekle değiştirilsin mi?')) {
+              this.data = parsed;
+              this.activeVehicleId = this.data.vehicles[0] ? this.data.vehicles[0].id : null;
+              this.saveStorage();
+              this.renderVehicleSelect();
+              this.renderAll();
+              this.closeModal('modalBackup');
+              alert('Yedek başarıyla geri yüklendi!');
+            }
+          } catch (err) {
+            alert('Dosya okunurken bir hata oluştu: ' + err.message);
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      // Modals and Vehicle CRUD
+      openAddVehicleModal() {
+        document.getElementById('modalVehicleTitle').textContent = 'Yeni Araç Ekle';
+        document.getElementById('vEditId').value = '';
+        document.getElementById('vPlaka').value = '';
+        document.getElementById('vModel').value = '';
+        document.getElementById('vType').value = 'Dizel';
+        document.getElementById('vCapMain').value = '50';
+        document.getElementById('vCapLpg').value = '';
+        this.handleVehicleTypeChange('Dizel');
+        document.getElementById('btnVehicleSubmit').innerHTML = '<i class="fa-solid fa-check"></i> Aracı Kaydet';
+        document.getElementById('btnDeleteVehicle').style.display = 'none';
+        this.openModal('modalVehicle');
+      }
+
+      openEditVehicleModal() {
+        const veh = this.getActiveVehicle();
+        if (!veh) return;
+        document.getElementById('modalVehicleTitle').textContent = 'Aracı Düzenle';
+        document.getElementById('vEditId').value = veh.id;
+        document.getElementById('vPlaka').value = veh.plaka;
+        document.getElementById('vModel').value = veh.markaModel;
+        document.getElementById('vType').value = veh.yakitTuru;
+        document.getElementById('vCapMain').value = veh.depoKapasitesi;
+        document.getElementById('vCapLpg').value = veh.lpgKapasitesi || '';
+        this.handleVehicleTypeChange(veh.yakitTuru);
+        document.getElementById('btnVehicleSubmit').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Güncelle';
+        document.getElementById('btnDeleteVehicle').style.display = 'block';
+        this.openModal('modalVehicle');
+      }
+
+      handleVehicleFormSubmit(e) {
+        e.preventDefault();
+        const editId = document.getElementById('vEditId').value;
+        const plaka = document.getElementById('vPlaka').value.trim().toUpperCase();
+        const model = document.getElementById('vModel').value.trim();
+        const type = document.getElementById('vType').value;
+        const cap = parseFloat(document.getElementById('vCapMain').value) || 50;
+        const lpgCap = parseFloat(document.getElementById('vCapLpg').value) || 0;
+
+        if (editId) {
+          const veh = this.data.vehicles.find(v => v.id === editId);
+          if (veh) {
+            veh.plaka = plaka;
+            veh.markaModel = model;
+            veh.yakitTuru = type;
+            veh.depoKapasitesi = cap;
+            veh.lpgKapasitesi = lpgCap;
+          }
+        } else {
+          const newVeh = {
+            id: 'v_' + Date.now(),
+            plaka: plaka,
+            markaModel: model,
+            yakitTuru: type,
+            depoKapasitesi: cap,
+            lpgKapasitesi: lpgCap,
+            docs: {
+              sigorta: { sirket: '', bitis: '', tutar: '' },
+              kasko: { sirket: '', bitis: '', tutar: '' },
+              muayene: { bitis: '', istasyon: '' },
+              ruhsat: { sasiNo: '', motorNo: '', seriNo: '' }
+            }
+          };
+          this.data.vehicles.push(newVeh);
+          this.activeVehicleId = newVeh.id;
+        }
+
+        this.saveStorage();
+        this.renderVehicleSelect();
+        this.renderAll();
+        this.closeModal('modalVehicle');
+      }
+
+      deleteCurrentVehicle() {
+        const veh = this.getActiveVehicle();
+        if (!veh) return;
+        if (!confirm(`"${veh.plaka} - ${veh.markaModel}" aracını ve araca ait tüm yakıt, km ve bakım kayıtlarını silmek istediğinize emin misiniz?`)) {
+          return;
+        }
+
+        this.data.vehicles = this.data.vehicles.filter(v => v.id !== veh.id);
+        this.data.fuels = this.data.fuels.filter(f => f.vehicleId !== veh.id);
+        this.data.kmLogs = this.data.kmLogs.filter(k => k.vehicleId !== veh.id);
+        this.data.routes = this.data.routes.filter(r => r.vehicleId !== veh.id);
+        this.data.maintenances = this.data.maintenances.filter(m => m.vehicleId !== veh.id);
+
+        this.activeVehicleId = this.data.vehicles[0] ? this.data.vehicles[0].id : null;
+        this.saveStorage();
+        this.renderVehicleSelect();
+        this.renderAll();
+        this.closeModal('modalVehicle');
+      }
+
+      openModal(id) {
+        document.getElementById(id).classList.add('active');
+        if (id === 'modalFuel') {
+          const veh = this.getActiveVehicle();
+          const fuels = this.getVehicleFuels();
+          const lastKm = fuels.length > 0 ? fuels[fuels.length - 1].km : null;
+          document.getElementById('fKmHint').textContent = lastKm ? `* Son girilen km: ${lastKm.toLocaleString('tr-TR')}` : '';
+          document.getElementById('lblFuelVolume').textContent = (veh && veh.yakitTuru === 'Elektrik') ? 'Şarj Miktarı (kWh)' : 'Alınan Miktar (Litre)';
+          document.getElementById('dualFuelPickerGroup').style.display = (veh && veh.yakitTuru === 'Benzin + LPG') ? 'block' : 'none';
+        }
+      }
+
+      closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+      }
+
+      switchTab(tabKey, btn) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + tabKey).classList.add('active');
+        btn.classList.add('active');
+      }
+
+      switchGarageSubTab(subKey, btn) {
+        document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('garageSubDocs').style.display = subKey === 'docs' ? 'block' : 'none';
+        document.getElementById('garageSubMaint').style.display = subKey === 'maint' ? 'block' : 'none';
+      }
+
+      handleVehicleTypeChange(type) {
+        const isEv = type === 'Elektrik';
+        const isDual = type === 'Benzin + LPG';
+        document.getElementById('lblMainCapacity').textContent = isEv ? 'Batarya Kapasitesi (kWh)' : 'Depo Kapasitesi (Litre)';
+        document.getElementById('groupLpgCapacity').style.display = isDual ? 'block' : 'none';
+      }
+
+      saveFuel(e) {
+        e.preventDefault();
+        const veh = this.getActiveVehicle();
+        const date = document.getElementById('fDate').value;
+        const km = parseFloat(document.getElementById('fKm').value);
+        const vol = parseFloat(document.getElementById('fVolume').value);
+        const cost = parseFloat(document.getElementById('fCost').value);
+
+        let subType = veh ? veh.yakitTuru : 'Benzin';
+        if (veh && veh.yakitTuru === 'Benzin + LPG') {
+          const r = document.querySelector('input[name="subFuelType"]:checked');
+          if (r) subType = r.value;
+        }
+
+        this.data.fuels.push({
+          id: 'f_' + Date.now(),
+          vehicleId: this.activeVehicleId,
+          subType: subType,
+          date: date,
+          km: km,
+          volume: vol,
+          cost: cost
+        });
+
+        this.saveStorage();
+        this.renderAll();
+        this.closeModal('modalFuel');
+        e.target.reset();
+      }
+
+      deleteFuel(id) {
+        if (!confirm('Bu yakıt kaydını silmek istediğinize emin misiniz?')) return;
+        this.data.fuels = this.data.fuels.filter(f => f.id !== id);
+        this.saveStorage();
+        this.renderAll();
+      }
+
+      saveKmLog(e) {
+        e.preventDefault();
+        const date = document.getElementById('kDate').value;
+        const km = parseFloat(document.getElementById('kKm').value);
+        const note = document.getElementById('kNote').value.trim();
+
+        this.data.kmLogs.push({
+          id: 'k_' + Date.now(),
+          vehicleId: this.activeVehicleId,
+          date: date,
+          km: km,
+          note: note
+        });
+
+        this.saveStorage();
+        this.renderAll();
+        this.closeModal('modalKm');
+        e.target.reset();
+      }
+
+      deleteKmLog(id) {
+        this.data.kmLogs = this.data.kmLogs.filter(k => k.id !== id);
+        this.saveStorage();
+        this.renderAll();
+      }
+
+      saveRoute(e) {
+        e.preventDefault();
+        const date = document.getElementById('rDate').value;
+        const from = document.getElementById('rFrom').value.trim();
+        const to = document.getElementById('rTo').value.trim();
+        const km = parseFloat(document.getElementById('rDistance').value);
+
+        const liveVol = parseFloat(document.getElementById('routeLiveVol').textContent) || 0;
+        const liveCost = parseFloat(document.getElementById('routeLiveCost').textContent) || 0;
+
+        this.data.routes.push({
+          id: 'r_' + Date.now(),
+          vehicleId: this.activeVehicleId,
+          date: date,
+          from: from,
+          to: to,
+          km: km,
+          volume: liveVol,
+          cost: liveCost
+        });
+
+        this.saveStorage();
+        this.renderRoutes();
+        this.closeModal('modalRoute');
+        e.target.reset();
+      }
+
+      deleteRoute(id) {
+        this.data.routes = this.data.routes.filter(r => r.id !== id);
+        this.saveStorage();
+        this.renderRoutes();
+      }
+
+      saveMaintenance(e) {
+        e.preventDefault();
+        const type = document.getElementById('mType').value;
+        const date = document.getElementById('mDate').value;
+        const km = parseFloat(document.getElementById('mKm').value);
+        const serv = document.getElementById('mService').value.trim();
+        const cost = parseFloat(document.getElementById('mCost').value) || 0;
+        const nextKm = parseFloat(document.getElementById('mNextKm').value) || 0;
+        const notes = document.getElementById('mNotes').value.trim();
+
+        this.data.maintenances.push({
+          id: 'm_' + Date.now(),
+          vehicleId: this.activeVehicleId,
+          type: type,
+          date: date,
+          km: km,
+          service: serv,
+          cost: cost,
+          nextKm: nextKm,
+          notes: notes
+        });
+
+        this.saveStorage();
+        this.renderGarage();
+        this.renderReports();
+        this.closeModal('modalMaint');
+        e.target.reset();
+      }
+
+      deleteMaint(id) {
+        if (!confirm('Bakım kaydı silinsin mi?')) return;
+        this.data.maintenances = this.data.maintenances.filter(m => m.id !== id);
+        this.saveStorage();
+        this.renderGarage();
+        this.renderReports();
+      }
+
+      openEditDocsModal(category) {
+        const veh = this.getActiveVehicle();
+        if (!veh) return;
+        if (!veh.docs) veh.docs = {};
+        const container = document.getElementById('modalDocsFormContainer');
+        const title = document.getElementById('modalDocsTitle');
+
+        if (category === 'sigorta') {
+          title.textContent = 'Trafik Sigortası Düzenle';
+          const cur = veh.docs.sigorta || {};
+          container.innerHTML = `
+            <form onsubmit="app.saveDocFields(event, 'sigorta')">
+              <div class="form-group"><label class="form-label">Sigorta Şirketi</label><input type="text" class="form-control" id="edSirket" value="${cur.sirket || ''}"></div>
+              <div class="form-group"><label class="form-label">Poliçe Bitiş Tarihi</label><input type="date" class="form-control" id="edBitis" value="${cur.bitis || ''}" required></div>
+              <div class="form-group"><label class="form-label">Prim Tutarı (TL)</label><input type="number" class="form-control" id="edTutar" value="${cur.tutar || ''}"></div>
+              <button type="submit" class="btn-primary"><i class="fa-solid fa-save"></i> Sigorta Bilgisini Kaydet</button>
+            </form>
+          `;
+        } else if (category === 'kasko') {
+          title.textContent = 'Kasko Poliçesi Düzenle';
+          const cur = veh.docs.kasko || {};
+          container.innerHTML = `
+            <form onsubmit="app.saveDocFields(event, 'kasko')">
+              <div class="form-group"><label class="form-label">Kasko Şirketi</label><input type="text" class="form-control" id="edSirket" value="${cur.sirket || ''}"></div>
+              <div class="form-group"><label class="form-label">Poliçe Bitiş Tarihi</label><input type="date" class="form-control" id="edBitis" value="${cur.bitis || ''}" required></div>
+              <div class="form-group"><label class="form-label">Tutar (TL)</label><input type="number" class="form-control" id="edTutar" value="${cur.tutar || ''}"></div>
+              <button type="submit" class="btn-primary"><i class="fa-solid fa-save"></i> Kasko Bilgisini Kaydet</button>
+            </form>
+          `;
+        } else if (category === 'muayene') {
+          title.textContent = 'TÜVTÜRK Muayene / Vize Düzenle';
+          const cur = veh.docs.muayene || {};
+          container.innerHTML = `
+            <form onsubmit="app.saveDocFields(event, 'muayene')">
+              <div class="form-group"><label class="form-label">Geçerlilik Bitiş Tarihi</label><input type="date" class="form-control" id="edBitis" value="${cur.bitis || ''}" required></div>
+              <div class="form-group"><label class="form-label">İstasyon / Not</label><input type="text" class="form-control" id="edStation" value="${cur.istasyon || ''}"></div>
+              <button type="submit" class="btn-primary"><i class="fa-solid fa-save"></i> Muayene Bilgisini Kaydet</button>
+            </form>
+          `;
+        } else if (category === 'ruhsat') {
+          title.textContent = 'Ruhsat Bilgileri Düzenle';
+          const cur = veh.docs.ruhsat || {};
+          container.innerHTML = `
+            <form onsubmit="app.saveDocFields(event, 'ruhsat')">
+              <div class="form-group"><label class="form-label">Şasi No (VIN)</label><input type="text" class="form-control" id="edSasi" value="${cur.sasiNo || ''}"></div>
+              <div class="form-group"><label class="form-label">Motor No</label><input type="text" class="form-control" id="edMotor" value="${cur.motorNo || ''}"></div>
+              <div class="form-group"><label class="form-label">Tescil Belge Seri No</label><input type="text" class="form-control" id="edSeri" value="${cur.seriNo || ''}"></div>
+              <button type="submit" class="btn-primary"><i class="fa-solid fa-save"></i> Ruhsat Bilgilerini Kaydet</button>
+            </form>
+          `;
+        }
+        this.openModal('modalDocs');
+      }
+
+      saveDocFields(e, category) {
+        e.preventDefault();
+        const veh = this.getActiveVehicle();
+        if (!veh) return;
+        if (!veh.docs) veh.docs = {};
+
+        if (category === 'sigorta' || category === 'kasko') {
+          veh.docs[category] = {
+            sirket: document.getElementById('edSirket').value.trim(),
+            bitis: document.getElementById('edBitis').value,
+            tutar: parseFloat(document.getElementById('edTutar').value) || 0
+          };
+        } else if (category === 'muayene') {
+          veh.docs.muayene = {
+            bitis: document.getElementById('edBitis').value,
+            istasyon: document.getElementById('edStation').value.trim()
+          };
+        } else if (category === 'ruhsat') {
+          veh.docs.ruhsat = {
+            sasiNo: document.getElementById('edSasi').value.trim(),
+            motorNo: document.getElementById('edMotor').value.trim(),
+            seriNo: document.getElementById('edSeri').value.trim()
+          };
+        }
+
+        this.saveStorage();
+        this.renderGarage();
+        this.closeModal('modalDocs');
+      }
+    }
+
+    const app = new OtoTakipEngine();
+  </script>
+</body>
+</html>
