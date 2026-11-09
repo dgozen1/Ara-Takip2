@@ -38,7 +38,7 @@
     .hero-stat-card { background: linear-gradient(145deg, #1e293b, #111827); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
     .hero-stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
     .stat-box { padding: 8px 4px; border-radius: 10px; background: rgba(255,255,255,0.03); }
-    .stat-val { font-size: 17px; font-weight: 700; }
+    .stat-val { font-size: 16px; font-weight: 700; }
     .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
 
     .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
@@ -90,7 +90,6 @@
     .sub-tab-btn { flex: 1; background: transparent; border: none; color: var(--text-muted); padding: 8px; font-size: 12px; font-weight: 600; border-radius: 7px; cursor: pointer; transition: 0.2s; }
     .sub-tab-btn.active { background: #334155; color: #fff; }
 
-    /* Slider Container */
     .range-wrap { display: flex; align-items: center; gap: 12px; }
     .range-input { flex: 1; accent-color: var(--accent-teal); cursor: pointer; }
     .range-val-badge { background: #0f172a; border: 1px solid var(--card-border); padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 14px; color: var(--accent-teal); min-width: 58px; text-align: center; }
@@ -118,7 +117,7 @@
       <div class="hero-stat-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <div>
-            <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Dinamik Seviye Tüketim</div>
+            <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Ortalama Sürüş Maliyeti</div>
             <div style="font-size:26px; font-weight:800; color:var(--accent-teal);" id="dashCostPerKm">0.00 ₺<span style="font-size:13px; font-weight:500; color:var(--text-muted);">/km</span></div>
           </div>
           <span class="badge badge-teal" id="dashCapacityBadge"><i class="fa-solid fa-gas-pump"></i> Depo: -</span>
@@ -126,7 +125,7 @@
         <div class="hero-stat-grid">
           <div class="stat-box">
             <div class="stat-val" style="color:var(--accent-blue);" id="dashPer100">-</div>
-            <div class="stat-label">100 KM Tüketim</div>
+            <div class="stat-label" id="dashPer100Label">100 KM Tüketim</div>
           </div>
           <div class="stat-box">
             <div class="stat-val" style="color:var(--accent-amber);" id="dashTotalKm">-</div>
@@ -256,13 +255,13 @@
         <div style="font-size:12px; color:var(--text-muted);">Doluluk yüzdelerine dayalı gerçek ara dönem tüketimleri</div>
       </div>
 
-      <!-- YENİ BÖLÜM 1: DOLUMLAR ARASI PERİYOT TÜKETİM VE MALİYET TABLOSU -->
+      <!-- DOLUMLAR ARASI PERİYOT TÜKETİM VE TUTAR TABLOSU -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-timeline"></i> İki Dolum Arası Gerçek Tüketim ve Tutar</div>
         <div class="item-list" id="repIntervalPeriodList"></div>
       </div>
 
-      <!-- YENİ BÖLÜM 2: AYRIŞTIRILMIŞ YAKIT FİYAT ANALİZİ -->
+      <!-- AYRIŞTIRILMIŞ YAKIT FİYAT ANALİZİ -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-arrow-trend-up"></i> Yakıt Türü Bazlı Fiyat Değişim Analizi</div>
         <div id="repFuelPricePerTypeContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
@@ -408,7 +407,7 @@
     </div>
   </div>
 
-  <!-- Modal: Fuel Add (YENİ DOLULUK ORANI % ALANI İLE) -->
+  <!-- Modal: Fuel Add -->
   <div class="modal-overlay" id="modalFuel">
     <div class="modal-box">
       <div class="modal-header">
@@ -445,7 +444,7 @@
           <input type="number" step="0.01" class="form-control" id="fCost" placeholder="Örn: 2050" required>
         </div>
 
-        <!-- YENİ: ALIM SONRASI TANK DOLULUK ORANI % -->
+        <!-- ALIM SONRASI TANK DOLULUK ORANI % -->
         <div class="form-group">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <label class="form-label" style="margin-bottom:0;" id="lblTankLevel">Alım Sonrası Tank Doluluğu (%)</label>
@@ -622,7 +621,7 @@
               markaModel: 'Honda Civic 1.6 Eco',
               yakitTuru: 'Benzin + LPG',
               depoKapasitesi: 47,
-              lpgKapasitesi: 42,
+              lpgKapasitesi: 33,
               docs: {
                 sigorta: { sirket: 'Allianz', bitis: '2027-03-01', tutar: 4600 },
                 kasko: { sirket: 'Sompo', bitis: '2027-05-15', tutar: 12800 },
@@ -732,9 +731,48 @@
       getEffectiveCapacity(veh, subType) {
         if (!veh) return 50;
         if (veh.yakitTuru === 'Benzin + LPG') {
-          return subType === 'LPG' ? (Number(veh.lpgKapasitesi) || 40) : (Number(veh.depoKapasitesi) || 50);
+          return subType === 'LPG' ? (Number(veh.lpgKapasitesi) || 33) : (Number(veh.depoKapasitesi) || 47);
         }
         return Number(veh.depoKapasitesi) || 50;
+      }
+
+      // AYRI HATLI TÜKETİM HESABI (BENZİN VE LPG BAĞIMSIZ HATLAR)
+      calculateSegmentTuketime(fuels, veh) {
+        const fuelTypesMap = {};
+        fuels.forEach(f => {
+          const type = f.subType || veh.yakitTuru;
+          if (!fuelTypesMap[type]) fuelTypesMap[type] = [];
+          fuelTypesMap[type].push(f);
+        });
+
+        const perTypeStats = {};
+        Object.keys(fuelTypesMap).forEach(type => {
+          const arr = fuelTypesMap[type].sort((a,b) => a.km - b.km);
+          const cap = this.getEffectiveCapacity(veh, type);
+          let sumConsumed = 0;
+          let sumCost = 0;
+          let totalKmSpan = 0;
+
+          if (arr.length >= 2) {
+            totalKmSpan = arr[arr.length - 1].km - arr[0].km;
+            for (let i = 1; i < arr.length; i++) {
+              const p = arr[i-1];
+              const c = arr[i];
+              const pPct = p.tankPercent !== undefined ? Number(p.tankPercent) : 100;
+              const cPct = c.tankPercent !== undefined ? Number(c.tankPercent) : 100;
+              const consumed = Math.max(0, (cap * (pPct / 100) + Number(c.volume)) - (cap * (cPct / 100)));
+              sumConsumed += consumed;
+              sumCost += Number(c.cost) || 0;
+            }
+          }
+          perTypeStats[type] = {
+            totalKm: totalKmSpan,
+            consumedVolume: sumConsumed,
+            totalCost: sumCost,
+            per100: totalKmSpan > 0 ? (sumConsumed / totalKmSpan) * 100 : 0
+          };
+        });
+        return perTypeStats;
       }
 
       renderDashboard() {
@@ -755,35 +793,44 @@
           document.getElementById('dashTotalKm').textContent = '-';
         } else {
           const totalKm = fuels[fuels.length - 1].km - fuels[0].km;
-          let sumConsumedVolume = 0;
-          let sumCost = 0;
-
-          // DİNAMİK DOLULUK YÜZDESİNE GÖRE GERÇEK TÜKETİM HESABI
-          for (let i = 1; i < fuels.length; i++) {
-            const prev = fuels[i-1];
-            const curr = fuels[i];
-            const prevTankPct = (prev.tankPercent !== undefined) ? Number(prev.tankPercent) : 100;
-            const currTankPct = (curr.tankPercent !== undefined) ? Number(curr.tankPercent) : 100;
-            const capacity = this.getEffectiveCapacity(veh, curr.subType);
-
-            // Tüketilen = (Önceki Litre) + Yeni Alınan - (Yeni Litre)
-            const prevLiters = capacity * (prevTankPct / 100);
-            const currLiters = capacity * (currTankPct / 100);
-            const consumedLiters = Math.max(0, (prevLiters + Number(curr.volume)) - currLiters);
-
-            sumConsumedVolume += consumedLiters;
-            sumCost += Number(curr.cost) || 0;
-          }
-
-          const costPerKm = totalKm > 0 ? (sumCost / totalKm) : 0;
-          const volPer100 = totalKm > 0 ? ((sumConsumedVolume / totalKm) * 100) : 0;
-
-          document.getElementById('dashCostPerKm').innerHTML = `${costPerKm.toFixed(2)} ₺<span style="font-size:13px; font-weight:500; color:var(--text-muted);">/km</span>`;
-          document.getElementById('dashPer100').textContent = `${volPer100.toFixed(1)} ${unit}`;
           document.getElementById('dashTotalKm').textContent = `${totalKm.toLocaleString('tr-TR')} km`;
+
+          if (veh.yakitTuru === 'Benzin + LPG') {
+            const stats = this.calculateSegmentTuketime(fuels, veh);
+            const bznPer100 = stats['Benzin'] ? stats['Benzin'].per100 : 0;
+            const lpgPer100 = stats['LPG'] ? stats['LPG'].per100 : 0;
+            
+            // Benzin + LPG için ayrıştırılmış gösterim
+            document.getElementById('dashPer100Label').textContent = 'LPG / Benzin (100 KM)';
+            document.getElementById('dashPer100').innerHTML = `<span style="color:var(--accent-purple); font-size:14px;">${lpgPer100 > 0 ? lpgPer100.toFixed(1) + 'L' : '-'}</span> / <span style="color:var(--accent-blue); font-size:14px;">${bznPer100 > 0 ? bznPer100.toFixed(1) + 'B' : '-'}</span>`;
+            
+            let totalRunningCost = 0;
+            if (stats['Benzin']) totalRunningCost += stats['Benzin'].totalCost;
+            if (stats['LPG']) totalRunningCost += stats['LPG'].totalCost;
+            const costPerKm = totalKm > 0 ? (totalRunningCost / totalKm) : 0;
+            document.getElementById('dashCostPerKm').innerHTML = `${costPerKm.toFixed(2)} ₺<span style="font-size:13px; font-weight:500; color:var(--text-muted);">/km</span>`;
+          } else {
+            let sumConsumedVolume = 0;
+            let sumCost = 0;
+            const capSingle = Number(veh.depoKapasitesi) || 50;
+            for (let i = 1; i < fuels.length; i++) {
+              const prev = fuels[i-1];
+              const curr = fuels[i];
+              const pPct = prev.tankPercent !== undefined ? Number(prev.tankPercent) : 100;
+              const cPct = curr.tankPercent !== undefined ? Number(curr.tankPercent) : 100;
+              const consumedLiters = Math.max(0, (capSingle * (pPct / 100) + Number(curr.volume)) - (capSingle * (cPct / 100)));
+              sumConsumedVolume += consumedLiters;
+              sumCost += Number(curr.cost) || 0;
+            }
+            const costPerKm = totalKm > 0 ? (sumCost / totalKm) : 0;
+            const volPer100 = totalKm > 0 ? ((sumConsumedVolume / totalKm) * 100) : 0;
+            document.getElementById('dashPer100Label').textContent = '100 KM Tüketim';
+            document.getElementById('dashCostPerKm').innerHTML = `${costPerKm.toFixed(2)} ₺<span style="font-size:13px; font-weight:500; color:var(--text-muted);">/km</span>`;
+            document.getElementById('dashPer100').textContent = `${volPer100.toFixed(1)} ${unit}`;
+          }
         }
 
-        // Dual Fuel Card
+        // Dual Fuel Bar
         const dualCard = document.getElementById('dualFuelCard');
         if (veh.yakitTuru === 'Benzin + LPG') {
           dualCard.style.display = 'block';
@@ -817,12 +864,15 @@
           return;
         }
 
+        // Kendi yakıt türünün bir önceki dolumuyla eşleştirerek doğru rozet üretme
         const rev = [...fuels].reverse();
-        rev.forEach((item, idx) => {
-          const origIdx = fuels.length - 1 - idx;
+        rev.forEach((item) => {
+          const sameTypePrevious = fuels
+            .filter(f => (f.subType || veh.yakitTuru) === (item.subType || veh.yakitTuru) && f.km < item.km);
+
           let diffKmText = '';
-          if (origIdx > 0) {
-            const prev = fuels[origIdx - 1];
+          if (sameTypePrevious.length > 0) {
+            const prev = sameTypePrevious[sameTypePrevious.length - 1];
             const diff = item.km - prev.km;
             const prevPct = (prev.tankPercent !== undefined) ? Number(prev.tankPercent) : 100;
             const curPct = (item.tankPercent !== undefined) ? Number(item.tankPercent) : 100;
@@ -903,17 +953,12 @@
         let activePer100 = 6.0;
         let lastUnitPrice = 45.0;
         if (fuels.length >= 2) {
-          const totKm = fuels[fuels.length - 1].km - fuels[0].km;
-          let sumVol = 0;
-          for (let i = 1; i < fuels.length; i++) {
-            const prev = fuels[i-1];
-            const curr = fuels[i];
-            const pPct = prev.tankPercent !== undefined ? Number(prev.tankPercent) : 100;
-            const cPct = curr.tankPercent !== undefined ? Number(curr.tankPercent) : 100;
-            const cap = this.getEffectiveCapacity(veh, curr.subType);
-            sumVol += Math.max(0, (cap * (pPct/100) + Number(curr.volume)) - (cap * (cPct/100)));
+          const stats = this.calculateSegmentTuketime(fuels, veh);
+          if (veh.yakitTuru === 'Benzin + LPG' && stats['LPG'] && stats['LPG'].per100 > 0) {
+            activePer100 = stats['LPG'].per100;
+          } else if (stats['Benzin'] && stats['Benzin'].per100 > 0) {
+            activePer100 = stats['Benzin'].per100;
           }
-          if (totKm > 0) activePer100 = (sumVol / totKm) * 100;
         }
         if (fuels.length > 0) {
           const lastF = fuels[fuels.length - 1];
@@ -967,17 +1012,12 @@
         let per100 = 6.0;
         let unitPrice = 45.0;
         if (fuels.length >= 2) {
-          const totKm = fuels[fuels.length - 1].km - fuels[0].km;
-          let sumVol = 0;
-          for (let i = 1; i < fuels.length; i++) {
-            const prev = fuels[i-1];
-            const curr = fuels[i];
-            const pPct = prev.tankPercent !== undefined ? Number(prev.tankPercent) : 100;
-            const cPct = curr.tankPercent !== undefined ? Number(curr.tankPercent) : 100;
-            const cap = this.getEffectiveCapacity(veh, curr.subType);
-            sumVol += Math.max(0, (cap * (pPct/100) + Number(curr.volume)) - (cap * (cPct/100)));
+          const stats = this.calculateSegmentTuketime(fuels, veh);
+          if (veh.yakitTuru === 'Benzin + LPG' && stats['LPG'] && stats['LPG'].per100 > 0) {
+            per100 = stats['LPG'].per100;
+          } else if (stats['Benzin'] && stats['Benzin'].per100 > 0) {
+            per100 = stats['Benzin'].per100;
           }
-          if (totKm > 0) per100 = (sumVol / totKm) * 100;
         }
         if (fuels.length > 0) {
           const lastF = fuels[fuels.length - 1];
@@ -1095,7 +1135,6 @@
         const isEv = veh.yakitTuru === 'Elektrik';
         const unit = isEv ? 'kWh' : 'LT';
 
-        // 1. SERVİS VE BAKIM ÖZETİ
         const totalMaintSpend = maints.reduce((sum, m) => sum + (Number(m.cost) || 0), 0);
         const avgMaintSpend = maints.length > 0 ? (totalMaintSpend / maints.length) : 0;
         const totalFuelSpend = fuels.reduce((sum, f) => sum + (Number(f.cost) || 0), 0);
@@ -1105,7 +1144,7 @@
         document.getElementById('repAvgMaintSpend').textContent = maints.length > 0 ? `${Math.round(avgMaintSpend).toLocaleString('tr-TR')} ₺/servis` : '-';
         document.getElementById('repTotalCarExpense').textContent = `${Math.round(grandTotalCarExpense).toLocaleString('tr-TR')} ₺`;
 
-        // 2. YENİ: İKİ YAKIT ALIMI ARASINDAKİ ORTALAMA TÜKETİM VE TUTAR LİSTESİ
+        // DOLUMLAR ARASI PERİYOT TÜKETİM VE TUTAR TABLOSU
         const intervalContainer = document.getElementById('repIntervalPeriodList');
         intervalContainer.innerHTML = '';
 
@@ -1114,13 +1153,15 @@
         } else {
           for (let i = fuels.length - 1; i >= 1; i--) {
             const curr = fuels[i];
-            const prev = fuels[i-1];
+            // Kendi türünün bir önceki kaydını bul, yoksa genel önceki kaydı al
+            const sameTypePrevList = fuels.slice(0, i).filter(f => (f.subType || veh.yakitTuru) === (curr.subType || veh.yakitTuru));
+            const prev = sameTypePrevList.length > 0 ? sameTypePrevList[sameTypePrevList.length - 1] : fuels[i-1];
+
             const diffKm = curr.km - prev.km;
             const pPct = prev.tankPercent !== undefined ? Number(prev.tankPercent) : 100;
             const cPct = curr.tankPercent !== undefined ? Number(curr.tankPercent) : 100;
             const cap = this.getEffectiveCapacity(veh, curr.subType);
             
-            // Gerçek Tüketilen Hacim = (Önceki Litre + Alınan Litre) - Yeni Litre
             const consumedVol = Math.max(0, (cap * (pPct / 100) + Number(curr.volume)) - (cap * (cPct / 100)));
             const per100Km = diffKm > 0 ? ((consumedVol / diffKm) * 100).toFixed(2) : '0';
             const costPerKm = diffKm > 0 ? (Number(curr.cost) / diffKm).toFixed(2) : '0';
@@ -1133,7 +1174,7 @@
                   <i class="fa-solid fa-arrows-split-up-and-left"></i>
                 </div>
                 <div>
-                  <div style="font-weight:700; font-size:13px;">${prev.date} ➔ ${curr.date}</div>
+                  <div style="font-weight:700; font-size:13px;">${prev.date} ➔ ${curr.date} <span class="badge ${curr.subType === 'LPG' ? 'badge-purple' : 'badge-blue'}">${curr.subType || veh.yakitTuru}</span></div>
                   <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
                     Mesafe: <b>${diffKm} km</b> • Tüketilen: <b>${consumedVol.toFixed(1)} ${unit}</b> (%${pPct} ➔ %${cPct})
                   </div>
@@ -1151,7 +1192,7 @@
           }
         }
 
-        // 3. YENİ: YAKIT TÜRÜ BAZLI AYRIŞTIRILMIŞ FİYAT DEĞİŞİM ANALİZİ
+        // YAKIT TÜRÜ BAZLI AYRIŞTIRILMIŞ FİYAT DEĞİŞİM ANALİZİ
         const fuelTypesMap = {};
         fuels.forEach(f => {
           const type = f.subType || veh.yakitTuru;
@@ -1199,7 +1240,7 @@
           priceContainer.appendChild(cardDiv);
         });
 
-        // 4. GENEL METRİKLER VE PROJEKSİYON
+        // GENEL METRİKLER VE PROJEKSİYON
         if (fuels.length < 2) {
           ['repRealCostPerKm','repDailyConsumption','repDailyKm','repDailyCost','repRefuelDistance','repOneYearKm','repRefuelRoutine','repNextRefuelDate','repFullTankRange']
             .forEach(id => {
@@ -1216,17 +1257,7 @@
         const daysDiff = Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
         const kmDiff = lastAll.km - firstAll.km;
 
-        let totalConsumedVol = 0;
-        let totalSubFuelCost = 0;
-        for (let i = 1; i < fuels.length; i++) {
-          const p = fuels[i-1];
-          const c = fuels[i];
-          const pP = p.tankPercent !== undefined ? Number(p.tankPercent) : 100;
-          const cP = c.tankPercent !== undefined ? Number(c.tankPercent) : 100;
-          const cap = this.getEffectiveCapacity(veh, c.subType);
-          totalConsumedVol += Math.max(0, (cap * (pP / 100) + Number(c.volume)) - (cap * (cP / 100)));
-          totalSubFuelCost += Number(c.cost) || 0;
-        }
+        let totalSubFuelCost = fuels.reduce((acc, c) => acc + (Number(c.cost) || 0), 0) - (Number(firstAll.cost) || 0);
 
         if (kmDiff > 0) {
           const realKmCost = (totalSubFuelCost + totalMaintSpend) / kmDiff;
@@ -1236,11 +1267,15 @@
         }
 
         const dailyKm = kmDiff / daysDiff;
-        const dailyVol = totalConsumedVol / daysDiff;
         const dailyCost = totalSubFuelCost / daysDiff;
-        document.getElementById('repDailyConsumption').textContent = `${dailyVol.toFixed(2)} ${unit}/gün`;
         document.getElementById('repDailyKm').textContent = `${dailyKm.toFixed(1)} km/gün`;
         document.getElementById('repDailyCost').textContent = `${dailyCost.toFixed(2)} ₺/gün`;
+
+        const statsSeg = this.calculateSegmentTuketime(fuels, veh);
+        let combinedVol = 0;
+        Object.keys(statsSeg).forEach(k => combinedVol += statsSeg[k].consumedVolume);
+        const dailyVol = combinedVol / daysDiff;
+        document.getElementById('repDailyConsumption').textContent = `${dailyVol.toFixed(2)} ${unit}/gün`;
 
         const refuelIntervalKm = kmDiff / (fuels.length - 1);
         document.getElementById('repRefuelDistance').textContent = `${Math.round(refuelIntervalKm)} km`;
@@ -1257,7 +1292,7 @@
         nextDate.setDate(nextDate.getDate() + routineDays);
         document.getElementById('repNextRefuelDate').textContent = nextDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 
-        const netPer100 = kmDiff > 0 ? ((totalConsumedVol / kmDiff) * 100) : 0;
+        const netPer100 = kmDiff > 0 ? ((combinedVol / kmDiff) * 100) : 0;
         const totalCapacity = (Number(veh.depoKapasitesi) || 0) + (Number(veh.lpgKapasitesi) || 0);
         const fullTankRange = netPer100 > 0 ? ((totalCapacity / netPer100) * 100) : 0;
         document.getElementById('repFullTankRange').textContent = `~ ${Math.round(fullTankRange)} km (${totalCapacity} ${unit} ile)`;
