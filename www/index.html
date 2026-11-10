@@ -95,7 +95,6 @@
     .range-input { flex: 1; accent-color: var(--accent-teal); cursor: pointer; }
     .range-val-badge { background: #0f172a; border: 1px solid var(--card-border); padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 14px; color: var(--accent-teal); min-width: 58px; text-align: center; }
 
-    /* Fiyat Karşılaştırma Tablosu Stilleri */
     .price-history-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
     .price-history-table th { color: var(--text-muted); text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--card-border); }
     .price-history-table td { padding: 6px; border-bottom: 1px solid rgba(255,255,255,0.03); }
@@ -103,7 +102,6 @@
 </head>
 <body>
 
-  <!-- Top Bar -->
   <header>
     <div class="vehicle-selector-wrap">
       <div class="vehicle-icon-badge" id="vehicleIconBadge"><i class="fa-solid fa-car-side"></i></div>
@@ -116,7 +114,6 @@
     </div>
   </header>
 
-  <!-- Main Views Container -->
   <main>
     <!-- TAB 1: DASHBOARD -->
     <section id="tab-dashboard" class="tab-content active">
@@ -150,7 +147,6 @@
         </button>
       </div>
 
-      <!-- Quick Dual Fuel Status if Benzin + LPG -->
       <div id="dualFuelCard" class="card" style="display:none;">
         <div class="card-title"><i class="fa-solid fa-scale-unbalanced"></i> Yakıt Dağılımı (Benzin vs LPG)</div>
         <div style="height:10px; background:#334155; border-radius:5px; overflow:hidden; display:flex; margin-bottom:8px;">
@@ -163,7 +159,6 @@
         </div>
       </div>
 
-      <!-- Fuel Records Feed -->
       <div class="card">
         <div class="card-title">
           <span><i class="fa-solid fa-clock-rotate-left"></i> Son Yakıt Hareketleri</span>
@@ -192,14 +187,20 @@
       <div style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
         <div>
           <h2 style="font-size:16px; font-weight:700;">Seyahat & Rota Maliyeti</h2>
-          <div style="font-size:12px; color:var(--text-muted);">Güncel tüketim ve birim fiyat bazlı hesap</div>
+          <div style="font-size:12px; color:var(--text-muted);">Ağırlıklı tüketim ve gerçek birim fiyat hesabı</div>
         </div>
         <button class="btn-secondary" onclick="app.openModal('modalRoute')"><i class="fa-solid fa-route"></i> Yeni Rota</button>
       </div>
       <div class="card" id="routeRefBanner">
-        <div style="font-size:12px; color:var(--text-muted); display:flex; justify-content:space-between;">
-          <span>Aktif Tüketim: <b id="routeRefConsumption" style="color:#fff;">-</b></span>
-          <span>Birim Fiyat: <b id="routeRefPrice" style="color:#fff;">-</b></span>
+        <div style="font-size:12px; color:var(--text-muted); display:flex; flex-direction:column; gap:4px;">
+          <div style="display:flex; justify-content:space-between;">
+            <span>Aktif Tüketim:</span>
+            <b id="routeRefConsumption" style="color:#fff;">-</b>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span>Ağırlıklı Birim Fiyat:</span>
+            <b id="routeRefPrice" style="color:var(--accent-teal);">-</b>
+          </div>
         </div>
       </div>
       <div class="item-list" id="routeList"></div>
@@ -258,10 +259,10 @@
     <section id="tab-reports" class="tab-content">
       <div class="card" style="border-left:4px solid var(--accent-teal);">
         <h2 style="font-size:16px; font-weight:700; margin-bottom:4px;">Gelişmiş Tüketim ve Fiyat Analizi</h2>
-        <div style="font-size:12px; color:var(--text-muted);">Doluluk yüzdelerine dayalı gerçek ara dönem tüketimleri</div>
+        <div style="font-size:12px; color:var(--text-muted);">Bağımsız yakıt hatları ve dinamik depo modelleri</div>
       </div>
 
-      <!-- 1. PROFESYONEL YAKIT FİYAT DEĞİŞİM & KARŞILAŞTIRMA ANALİZİ -->
+      <!-- 1. PROFESYONEL YAKIT FİYAT DEĞİŞİM ANALİZİ -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-arrow-trend-up"></i> Yakıt Türü Bazlı Fiyat Değişim Analizi</div>
         <div id="repFuelPricePerTypeContainer" style="display:flex; flex-direction:column; gap:12px;"></div>
@@ -325,7 +326,7 @@
         </div>
       </div>
 
-      <!-- 4. EN ALTA TAŞINAN BÖLÜM: DOLUMLAR ARASI PERİYOT TÜKETİM VE TUTAR LİSTESİ -->
+      <!-- 4. EN ALTA KONUMLANDIRILAN: DOLUMLAR ARASI PERİYOT TÜKETİM VE TUTAR LİSTESİ -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-timeline"></i> İki Dolum Arası Geçen Tüketim ve Tutar</div>
         <div class="item-list" id="repIntervalPeriodList"></div>
@@ -414,7 +415,7 @@
     </div>
   </div>
 
-  <!-- Modal: Fuel Add & Edit (DÜZENLEME DESTEĞİ İLE) -->
+  <!-- Modal: Fuel Add & Edit -->
   <div class="modal-overlay" id="modalFuel">
     <div class="modal-box">
       <div class="modal-header">
@@ -452,7 +453,6 @@
           <input type="number" step="0.01" class="form-control" id="fCost" placeholder="Örn: 2050" required>
         </div>
 
-        <!-- ALIM SONRASI TANK DOLULUK ORANI % -->
         <div class="form-group">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <label class="form-label" style="margin-bottom:0;" id="lblTankLevel">Alım Sonrası Tank Doluluğu (%)</label>
@@ -494,7 +494,7 @@
     </div>
   </div>
 
-  <!-- Modal: Route Add -->
+  <!-- Modal: Route Add (ÇİFT YAKITLI DETAYLI CANLI ÖNİZLEME İLE) -->
   <div class="modal-overlay" id="modalRoute">
     <div class="modal-box">
       <div class="modal-header">
@@ -523,6 +523,7 @@
         <div class="card" style="background:#0f172a; margin-bottom:12px; padding:12px;">
           <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">Tahmini Tüketim: <b id="routeLiveVol" style="color:var(--accent-teal);">-</b></div>
           <div style="font-size:15px; font-weight:700; color:#fff;">Tahmini Maliyet: <b id="routeLiveCost" style="color:var(--accent-amber);">-</b></div>
+          <div style="font-size:11px; color:var(--accent-blue); margin-top:4px;" id="routeLiveRateHint"></div>
         </div>
         <button type="submit" class="btn-primary"><i class="fa-solid fa-map-location-dot"></i> Rotayı Kaydet</button>
       </form>
@@ -592,7 +593,6 @@
     </div>
   </div>
 
-  <!-- APPLICATION SCRIPT LOGIC -->
   <script>
     class OtoTakipEngine {
       constructor() {
@@ -744,6 +744,7 @@
         return Number(veh.depoKapasitesi) || 50;
       }
 
+      // BAĞIMSIZ HATLI TÜKETİM VE SON BİRİM FİYAT ANALİZİ
       calculateSegmentTuketime(fuels, veh) {
         const fuelTypesMap = {};
         fuels.forEach(f => {
@@ -772,14 +773,72 @@
               sumCost += Number(c.cost) || 0;
             }
           }
+
+          // Son alınan birim fiyat
+          let lastUnitPrice = 0;
+          if (arr.length > 0) {
+            const lastF = arr[arr.length - 1];
+            if (lastF.volume > 0) lastUnitPrice = lastF.cost / lastF.volume;
+          }
+
           perTypeStats[type] = {
             totalKm: totalKmSpan,
             consumedVolume: sumConsumed,
             totalCost: sumCost,
-            per100: totalKmSpan > 0 ? (sumConsumed / totalKmSpan) * 100 : 0
+            per100: totalKmSpan > 0 ? (sumConsumed / totalKmSpan) * 100 : 0,
+            lastUnitPrice: lastUnitPrice
           };
         });
         return perTypeStats;
+      }
+
+      // ROTA PLANLAMA İÇİN GELİŞMİŞ ÇİFT YAKIT VERİ MODELİ
+      getRouteReferenceMetrics(veh, fuels) {
+        const isEv = veh.yakitTuru === 'Elektrik';
+        const unit = isEv ? 'kWh' : 'LT';
+        const stats = this.calculateSegmentTuketime(fuels, veh);
+
+        if (veh.yakitTuru === 'Benzin + LPG') {
+          // LPG ve Benzin tüketimlerini ayrı ayrı al
+          const lpgPer100 = (stats['LPG'] && stats['LPG'].per100 > 0) ? stats['LPG'].per100 : 8.5;
+          const bznPer100 = (stats['Benzin'] && stats['Benzin'].per100 > 0) ? stats['Benzin'].per100 : 1.5;
+          
+          const lpgPrice = (stats['LPG'] && stats['LPG'].lastUnitPrice > 0) ? stats['LPG'].lastUnitPrice : 51.5;
+          const bznPrice = (stats['Benzin'] && stats['Benzin'].lastUnitPrice > 0) ? stats['Benzin'].lastUnitPrice : 76.5;
+
+          // 100 km'lik karma sürüş maliyeti ve ağırlıklı birim fiyat
+          const cost100 = (lpgPer100 * lpgPrice) + (bznPer100 * bznPrice);
+          const totalVol100 = lpgPer100 + bznPer100;
+          const weightedUnitPrice = totalVol100 > 0 ? (cost100 / totalVol100) : 0;
+
+          return {
+            isDual: true,
+            lpgPer100,
+            bznPer100,
+            lpgPrice,
+            bznPrice,
+            totalVol100,
+            weightedUnitPrice,
+            displayConsumption: `${lpgPer100.toFixed(1)} LT LPG + ${bznPer100.toFixed(1)} LT Benzin / 100km`,
+            displayPrice: `${weightedUnitPrice.toFixed(2)} ₺/LT (Karma Ağırlıklı)`
+          };
+        } else {
+          // Tek yakıtlı araçlar
+          let singlePer100 = 6.0;
+          let singlePrice = 45.0;
+
+          const type = veh.yakitTuru;
+          if (stats[type] && stats[type].per100 > 0) singlePer100 = stats[type].per100;
+          if (stats[type] && stats[type].lastUnitPrice > 0) singlePrice = stats[type].lastUnitPrice;
+
+          return {
+            isDual: false,
+            singlePer100,
+            singlePrice,
+            displayConsumption: `${singlePer100.toFixed(1)} ${unit}/100 km`,
+            displayPrice: `${singlePrice.toFixed(2)} ₺/${unit}`
+          };
+        }
       }
 
       renderDashboard() {
@@ -861,7 +920,7 @@
           dualCard.style.display = 'none';
         }
 
-        // Fuel History List (DÜZENLEME & SİLME BUTONLARI İLE)
+        // Fuel History List
         const feed = document.getElementById('fuelHistoryList');
         document.getElementById('fuelCountLabel').textContent = `${fuels.length} dolum`;
         feed.innerHTML = '';
@@ -955,26 +1014,11 @@
         if (!veh) return;
         const fuels = this.getVehicleFuels();
         const routes = this.data.routes.filter(r => r.vehicleId === this.activeVehicleId);
-        const isEv = veh.yakitTuru === 'Elektrik';
-        const unit = isEv ? 'kWh' : 'LT';
 
-        let activePer100 = 6.0;
-        let lastUnitPrice = 45.0;
-        if (fuels.length >= 2) {
-          const stats = this.calculateSegmentTuketime(fuels, veh);
-          if (veh.yakitTuru === 'Benzin + LPG' && stats['LPG'] && stats['LPG'].per100 > 0) {
-            activePer100 = stats['LPG'].per100;
-          } else if (stats['Benzin'] && stats['Benzin'].per100 > 0) {
-            activePer100 = stats['Benzin'].per100;
-          }
-        }
-        if (fuels.length > 0) {
-          const lastF = fuels[fuels.length - 1];
-          if (lastF.volume > 0) lastUnitPrice = lastF.cost / lastF.volume;
-        }
-
-        document.getElementById('routeRefConsumption').textContent = `${activePer100.toFixed(1)} ${unit}/100 km`;
-        document.getElementById('routeRefPrice').textContent = `${lastUnitPrice.toFixed(2)} ₺/${unit}`;
+        // Gelişmiş çift yakıtlı rota metrikleri
+        const routeMetrics = this.getRouteReferenceMetrics(veh, fuels);
+        document.getElementById('routeRefConsumption').textContent = routeMetrics.displayConsumption;
+        document.getElementById('routeRefPrice').textContent = routeMetrics.displayPrice;
 
         list.innerHTML = '';
         if (routes.length === 0) {
@@ -992,7 +1036,7 @@
               </div>
               <div>
                 <div style="font-weight:700; font-size:14px;">${r.from} ➔ ${r.to}</div>
-                <div style="font-size:11px; color:var(--text-muted);">${r.date} • ${r.km} km (${r.volume} ${unit})</div>
+                <div style="font-size:11px; color:var(--text-muted);">${r.date} • ${r.km} km (${r.volumeDetail || (r.volume + ' LT')})</div>
               </div>
             </div>
             <div style="text-align:right;">
@@ -1009,33 +1053,69 @@
         if (isNaN(d) || d <= 0) {
           document.getElementById('routeLiveVol').textContent = '-';
           document.getElementById('routeLiveCost').textContent = '-';
+          document.getElementById('routeLiveRateHint').textContent = '';
           return;
         }
         const veh = this.getActiveVehicle();
         if (!veh) return;
         const fuels = this.getVehicleFuels();
-        const isEv = veh.yakitTuru === 'Elektrik';
-        const unit = isEv ? 'kWh' : 'LT';
+        const m = this.getRouteReferenceMetrics(veh, fuels);
 
-        let per100 = 6.0;
-        let unitPrice = 45.0;
-        if (fuels.length >= 2) {
-          const stats = this.calculateSegmentTuketime(fuels, veh);
-          if (veh.yakitTuru === 'Benzin + LPG' && stats['LPG'] && stats['LPG'].per100 > 0) {
-            per100 = stats['LPG'].per100;
-          } else if (stats['Benzin'] && stats['Benzin'].per100 > 0) {
-            per100 = stats['Benzin'].per100;
-          }
-        }
-        if (fuels.length > 0) {
-          const lastF = fuels[fuels.length - 1];
-          if (lastF.volume > 0) unitPrice = lastF.cost / lastF.volume;
-        }
+        if (m.isDual) {
+          const lpgVol = (d * m.lpgPer100) / 100;
+          const bznVol = (d * m.bznPer100) / 100;
+          const lpgCost = lpgVol * m.lpgPrice;
+          const bznCost = bznVol * m.bznPrice;
+          const totalCost = lpgCost + bznCost;
 
-        const needVol = (d * per100) / 100;
-        const totCost = needVol * unitPrice;
-        document.getElementById('routeLiveVol').textContent = `${needVol.toFixed(1)} ${unit}`;
-        document.getElementById('routeLiveCost').textContent = `${totCost.toFixed(2)} ₺`;
+          document.getElementById('routeLiveVol').textContent = `${lpgVol.toFixed(1)} LT LPG + ${bznVol.toFixed(1)} LT Benzin`;
+          document.getElementById('routeLiveCost').textContent = `${totalCost.toFixed(2)} ₺`;
+          document.getElementById('routeLiveRateHint').textContent = `* LPG (${m.lpgPrice.toFixed(2)} ₺): ${lpgCost.toFixed(1)} ₺ | Benzin (${m.bznPrice.toFixed(2)} ₺): ${bznCost.toFixed(1)} ₺`;
+        } else {
+          const needVol = (d * m.singlePer100) / 100;
+          const totCost = needVol * m.singlePrice;
+          const isEv = veh.yakitTuru === 'Elektrik';
+          const unit = isEv ? 'kWh' : 'LT';
+
+          document.getElementById('routeLiveVol').textContent = `${needVol.toFixed(1)} ${unit}`;
+          document.getElementById('routeLiveCost').textContent = `${totCost.toFixed(2)} ₺`;
+          document.getElementById('routeLiveRateHint').textContent = `* Birim Fiyat: ${m.singlePrice.toFixed(2)} ₺/${unit}`;
+        }
+      }
+
+      saveRoute(e) {
+        e.preventDefault();
+        const veh = this.getActiveVehicle();
+        const fuels = this.getVehicleFuels();
+        const date = document.getElementById('rDate').value;
+        const from = document.getElementById('rFrom').value.trim();
+        const to = document.getElementById('rTo').value.trim();
+        const km = parseFloat(document.getElementById('rDistance').value);
+
+        const liveVolText = document.getElementById('routeLiveVol').textContent;
+        const liveCost = parseFloat(document.getElementById('routeLiveCost').textContent) || 0;
+
+        this.data.routes.push({
+          id: 'r_' + Date.now(),
+          vehicleId: this.activeVehicleId,
+          date: date,
+          from: from,
+          to: to,
+          km: km,
+          volumeDetail: liveVolText,
+          cost: liveCost
+        });
+
+        this.saveStorage();
+        this.renderRoutes();
+        this.closeModal('modalRoute');
+        e.target.reset();
+      }
+
+      deleteRoute(id) {
+        this.data.routes = this.data.routes.filter(r => r.id !== id);
+        this.saveStorage();
+        this.renderRoutes();
       }
 
       renderGarage() {
@@ -1143,7 +1223,7 @@
         const isEv = veh.yakitTuru === 'Elektrik';
         const unit = isEv ? 'kWh' : 'LT';
 
-        // 1. PROFESYONEL YAKIT FİYAT ANALİZİ VE KARŞILAŞTIRMA LİSTESİ
+        // 1. PROFESYONEL YAKIT FİYAT ANALİZİ
         const fuelTypesMap = {};
         fuels.forEach(f => {
           const type = f.subType || veh.yakitTuru;
@@ -1180,7 +1260,6 @@
               diffBadge = `<span class="badge badge-blue">Sabit</span>`;
             }
 
-            // Kronolojik Fiyat Tablosu Satırları
             let rowsHtml = '';
             for (let i = 0; i < arr.length; i++) {
               const curItem = arr[i];
@@ -1317,7 +1396,7 @@
           document.getElementById('repFullTankRange').textContent = `~ ${Math.round(fullTankRange)} km (${totalCapacity} ${unit} ile)`;
         }
 
-        // 4. EN ALTA TAŞINAN: DOLUMLAR ARASI PERİYOT TÜKETİM VE TUTAR LİSTESİ
+        // 4. EN ALTA TAŞINAN PERİYOT LİSTESİ
         const intervalContainer = document.getElementById('repIntervalPeriodList');
         intervalContainer.innerHTML = '';
 
@@ -1408,7 +1487,7 @@
         reader.readAsText(file);
       }
 
-      // Modals and Vehicle CRUD
+      // VEHICLE CRUD
       openAddVehicleModal() {
         document.getElementById('modalVehicleTitle').textContent = 'Yeni Araç Ekle';
         document.getElementById('vEditId').value = '';
@@ -1682,39 +1761,6 @@
         this.data.kmLogs = this.data.kmLogs.filter(k => k.id !== id);
         this.saveStorage();
         this.renderAll();
-      }
-
-      saveRoute(e) {
-        e.preventDefault();
-        const date = document.getElementById('rDate').value;
-        const from = document.getElementById('rFrom').value.trim();
-        const to = document.getElementById('rTo').value.trim();
-        const km = parseFloat(document.getElementById('rDistance').value);
-
-        const liveVol = parseFloat(document.getElementById('routeLiveVol').textContent) || 0;
-        const liveCost = parseFloat(document.getElementById('routeLiveCost').textContent) || 0;
-
-        this.data.routes.push({
-          id: 'r_' + Date.now(),
-          vehicleId: this.activeVehicleId,
-          date: date,
-          from: from,
-          to: to,
-          km: km,
-          volume: liveVol,
-          cost: liveCost
-        });
-
-        this.saveStorage();
-        this.renderRoutes();
-        this.closeModal('modalRoute');
-        e.target.reset();
-      }
-
-      deleteRoute(id) {
-        this.data.routes = this.data.routes.filter(r => r.id !== id);
-        this.saveStorage();
-        this.renderRoutes();
       }
 
       saveMaintenance(e) {
