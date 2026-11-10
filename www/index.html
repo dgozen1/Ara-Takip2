@@ -49,6 +49,7 @@
     .btn-secondary { background: #334155; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; }
     .btn-danger { background: #ef4444; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; }
     .btn-danger-outline { background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 6px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+    .btn-edit-outline { background: transparent; border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 6px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
 
     .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
     .badge-teal { background: rgba(20, 184, 166, 0.15); color: var(--accent-teal); }
@@ -93,6 +94,11 @@
     .range-wrap { display: flex; align-items: center; gap: 12px; }
     .range-input { flex: 1; accent-color: var(--accent-teal); cursor: pointer; }
     .range-val-badge { background: #0f172a; border: 1px solid var(--card-border); padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 14px; color: var(--accent-teal); min-width: 58px; text-align: center; }
+
+    /* Fiyat Karşılaştırma Tablosu Stilleri */
+    .price-history-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
+    .price-history-table th { color: var(--text-muted); text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--card-border); }
+    .price-history-table td { padding: 6px; border-bottom: 1px solid rgba(255,255,255,0.03); }
   </style>
 </head>
 <body>
@@ -139,7 +145,7 @@
       </div>
 
       <div style="margin-bottom: 16px;">
-        <button class="btn-primary" onclick="app.openModal('modalFuel')">
+        <button class="btn-primary" onclick="app.openAddFuelModal()">
           <i class="fa-solid fa-gas-pump"></i> Yakıt / Şarj Alımı Ekle
         </button>
       </div>
@@ -255,19 +261,13 @@
         <div style="font-size:12px; color:var(--text-muted);">Doluluk yüzdelerine dayalı gerçek ara dönem tüketimleri</div>
       </div>
 
-      <!-- DOLUMLAR ARASI PERİYOT TÜKETİM VE TUTAR TABLOSU -->
-      <div class="card">
-        <div class="card-title"><i class="fa-solid fa-timeline"></i> İki Dolum Arası Gerçek Tüketim ve Tutar</div>
-        <div class="item-list" id="repIntervalPeriodList"></div>
-      </div>
-
-      <!-- AYRIŞTIRILMIŞ YAKIT FİYAT ANALİZİ -->
+      <!-- 1. PROFESYONEL YAKIT FİYAT DEĞİŞİM & KARŞILAŞTIRMA ANALİZİ -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-arrow-trend-up"></i> Yakıt Türü Bazlı Fiyat Değişim Analizi</div>
-        <div id="repFuelPricePerTypeContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+        <div id="repFuelPricePerTypeContainer" style="display:flex; flex-direction:column; gap:12px;"></div>
       </div>
 
-      <!-- Servis ve Bakım Özeti -->
+      <!-- 2. SERVİS VE BAKIM ÖZETİ -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-wrench"></i> Servis, Bakım ve Genel Araç Masrafı</div>
         <div class="metric-row">
@@ -288,6 +288,7 @@
         </div>
       </div>
 
+      <!-- 3. GENEL METRİKLER VE PROJEKSİYON -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-chart-line"></i> Genel Tüketim ve Projeksiyon</div>
         <div class="metric-row">
@@ -322,6 +323,12 @@
           <div class="metric-title"><i class="fa-solid fa-gauge-high"></i> Tam Depo Tahmini Menzil</div>
           <div class="metric-value" style="color:var(--accent-teal);" id="repFullTankRange">-</div>
         </div>
+      </div>
+
+      <!-- 4. EN ALTA TAŞINAN BÖLÜM: DOLUMLAR ARASI PERİYOT TÜKETİM VE TUTAR LİSTESİ -->
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-timeline"></i> İki Dolum Arası Geçen Tüketim ve Tutar</div>
+        <div class="item-list" id="repIntervalPeriodList"></div>
       </div>
     </section>
   </main>
@@ -407,22 +414,23 @@
     </div>
   </div>
 
-  <!-- Modal: Fuel Add -->
+  <!-- Modal: Fuel Add & Edit (DÜZENLEME DESTEĞİ İLE) -->
   <div class="modal-overlay" id="modalFuel">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>Yakıt / Şarj Alımı Ekle</h3>
+        <h3 id="modalFuelTitle">Yakıt / Şarj Alımı Ekle</h3>
         <button class="btn-close" onclick="app.closeModal('modalFuel')">&times;</button>
       </div>
-      <form onsubmit="app.saveFuel(event)">
+      <form onsubmit="app.handleFuelFormSubmit(event)">
+        <input type="hidden" id="fEditId">
         <div class="form-group" id="dualFuelPickerGroup" style="display:none;">
           <label class="form-label">Alınan Yakıt Türü</label>
           <div style="display:flex; gap:10px;">
             <label style="flex:1; padding:8px; background:#0f172a; border:1px solid #334155; border-radius:8px; text-align:center; font-size:13px; cursor:pointer;">
-              <input type="radio" name="subFuelType" value="LPG" checked onchange="app.updateFuelModalCapacityInfo()"> LPG (Otogaz)
+              <input type="radio" name="subFuelType" value="LPG" id="radioLpg" checked onchange="app.updateFuelModalCapacityInfo()"> LPG (Otogaz)
             </label>
             <label style="flex:1; padding:8px; background:#0f172a; border:1px solid #334155; border-radius:8px; text-align:center; font-size:13px; cursor:pointer;">
-              <input type="radio" name="subFuelType" value="Benzin" onchange="app.updateFuelModalCapacityInfo()"> Benzin
+              <input type="radio" name="subFuelType" value="Benzin" id="radioBenzin" onchange="app.updateFuelModalCapacityInfo()"> Benzin
             </label>
           </div>
         </div>
@@ -453,10 +461,10 @@
           <div class="range-wrap">
             <input type="range" class="range-input" id="fTankPercent" min="5" max="100" step="5" value="100" oninput="document.getElementById('lblTankLevelDisplay').textContent = '%' + this.value">
           </div>
-          <div class="form-hint" id="fTankCapacityHint">* Depo tam dolduysa %100 bırakın, kısmi alımlarda gösterge ibresini seçin.</div>
+          <div class="form-hint" id="fTankCapacityHint">* Depo doluluk oranını göstergeye göre ayarlayabilirsiniz.</div>
         </div>
 
-        <button type="submit" class="btn-primary" style="margin-top:10px;"><i class="fa-solid fa-floppy-disk"></i> Kaydı Ekle</button>
+        <button type="submit" class="btn-primary" id="btnFuelSubmit" style="margin-top:10px;"><i class="fa-solid fa-floppy-disk"></i> Kaydı Ekle</button>
       </form>
     </div>
   </div>
@@ -736,7 +744,6 @@
         return Number(veh.depoKapasitesi) || 50;
       }
 
-      // AYRI HATLI TÜKETİM HESABI (BENZİN VE LPG BAĞIMSIZ HATLAR)
       calculateSegmentTuketime(fuels, veh) {
         const fuelTypesMap = {};
         fuels.forEach(f => {
@@ -800,7 +807,6 @@
             const bznPer100 = stats['Benzin'] ? stats['Benzin'].per100 : 0;
             const lpgPer100 = stats['LPG'] ? stats['LPG'].per100 : 0;
             
-            // Benzin + LPG için ayrıştırılmış gösterim
             document.getElementById('dashPer100Label').textContent = 'LPG / Benzin (100 KM)';
             document.getElementById('dashPer100').innerHTML = `<span style="color:var(--accent-purple); font-size:14px;">${lpgPer100 > 0 ? lpgPer100.toFixed(1) + 'L' : '-'}</span> / <span style="color:var(--accent-blue); font-size:14px;">${bznPer100 > 0 ? bznPer100.toFixed(1) + 'B' : '-'}</span>`;
             
@@ -855,7 +861,7 @@
           dualCard.style.display = 'none';
         }
 
-        // Fuel History List
+        // Fuel History List (DÜZENLEME & SİLME BUTONLARI İLE)
         const feed = document.getElementById('fuelHistoryList');
         document.getElementById('fuelCountLabel').textContent = `${fuels.length} dolum`;
         feed.innerHTML = '';
@@ -864,7 +870,6 @@
           return;
         }
 
-        // Kendi yakıt türünün bir önceki dolumuyla eşleştirerek doğru rozet üretme
         const rev = [...fuels].reverse();
         rev.forEach((item) => {
           const sameTypePrevious = fuels
@@ -903,7 +908,10 @@
             </div>
             <div style="text-align:right;">
               <div style="font-weight:800; font-size:15px; color:#fff;">${Number(item.cost).toLocaleString('tr-TR')} ₺</div>
-              <button class="btn-danger-outline" style="margin-top:6px;" onclick="app.deleteFuel('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+              <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:6px;">
+                <button class="btn-edit-outline" onclick="app.openEditFuelModal('${item.id}')" title="Düzenle"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn-danger-outline" onclick="app.deleteFuel('${item.id}')" title="Sil"><i class="fa-solid fa-trash"></i></button>
+              </div>
             </div>
           `;
           feed.appendChild(el);
@@ -1135,6 +1143,115 @@
         const isEv = veh.yakitTuru === 'Elektrik';
         const unit = isEv ? 'kWh' : 'LT';
 
+        // 1. PROFESYONEL YAKIT FİYAT ANALİZİ VE KARŞILAŞTIRMA LİSTESİ
+        const fuelTypesMap = {};
+        fuels.forEach(f => {
+          const type = f.subType || veh.yakitTuru;
+          if (!fuelTypesMap[type]) fuelTypesMap[type] = [];
+          fuelTypesMap[type].push(f);
+        });
+
+        const priceContainer = document.getElementById('repFuelPricePerTypeContainer');
+        priceContainer.innerHTML = '';
+
+        if (fuels.length === 0) {
+          priceContainer.innerHTML = '<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:10px;">Fiyat analizi için yakıt kaydı bulunmuyor.</div>';
+        } else {
+          Object.keys(fuelTypesMap).forEach(type => {
+            const arr = fuelTypesMap[type].sort((a,b) => a.km - b.km);
+            const prices = arr.map(x => x.volume > 0 ? (x.cost / x.volume) : 0).filter(p => p > 0);
+
+            if (prices.length === 0) return;
+
+            const firstP = prices[0];
+            const lastP = prices[prices.length - 1];
+            const minP = Math.min(...prices);
+            const maxP = Math.max(...prices);
+            const avgP = prices.reduce((a,b) => a+b, 0) / prices.length;
+            const diffP = lastP - firstP;
+            const pct = firstP > 0 ? ((diffP / firstP) * 100) : 0;
+
+            let diffBadge = '';
+            if (diffP > 0) {
+              diffBadge = `<span class="badge badge-red">+${diffP.toFixed(2)} ₺ (+%${pct.toFixed(1)})</span>`;
+            } else if (diffP < 0) {
+              diffBadge = `<span class="badge badge-green">${diffP.toFixed(2)} ₺ (%${pct.toFixed(1)})</span>`;
+            } else {
+              diffBadge = `<span class="badge badge-blue">Sabit</span>`;
+            }
+
+            // Kronolojik Fiyat Tablosu Satırları
+            let rowsHtml = '';
+            for (let i = 0; i < arr.length; i++) {
+              const curItem = arr[i];
+              const curUnitPrice = curItem.volume > 0 ? (curItem.cost / curItem.volume) : 0;
+              let changeText = '-';
+              if (i > 0) {
+                const prevUnitPrice = arr[i-1].volume > 0 ? (arr[i-1].cost / arr[i-1].volume) : 0;
+                const stepDiff = curUnitPrice - prevUnitPrice;
+                if (stepDiff > 0) {
+                  changeText = `<span style="color:#ef4444; font-weight:700;">+${stepDiff.toFixed(2)} ₺</span>`;
+                } else if (stepDiff < 0) {
+                  changeText = `<span style="color:#22c55e; font-weight:700;">${stepDiff.toFixed(2)} ₺</span>`;
+                } else {
+                  changeText = `<span style="color:#94a3b8;">0.00 ₺</span>`;
+                }
+              }
+
+              rowsHtml += `
+                <tr>
+                  <td>${curItem.date}</td>
+                  <td><b>${curItem.km.toLocaleString('tr-TR')} km</b></td>
+                  <td style="color:#fff; font-weight:700;">${curUnitPrice.toFixed(2)} ₺</td>
+                  <td>${changeText}</td>
+                </tr>
+              `;
+            }
+
+            const cardDiv = document.createElement('div');
+            cardDiv.style.background = '#0f172a';
+            cardDiv.style.padding = '12px 14px';
+            cardDiv.style.borderRadius = '12px';
+            cardDiv.style.border = '1px solid var(--card-border)';
+            cardDiv.innerHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-weight:700; font-size:14px; color:var(--accent-teal);"><i class="fa-solid fa-gas-pump"></i> ${type} Fiyat Trendi</span>
+                ${diffBadge}
+              </div>
+              <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; background:#162032; padding:8px; border-radius:8px; margin-bottom:10px; text-align:center;">
+                <div>
+                  <div style="font-size:10px; color:var(--text-muted);">En Düşük</div>
+                  <div style="font-size:13px; font-weight:700; color:#22c55e;">${minP.toFixed(2)} ₺</div>
+                </div>
+                <div>
+                  <div style="font-size:10px; color:var(--text-muted);">Ortalama</div>
+                  <div style="font-size:13px; font-weight:700; color:var(--accent-blue);">${avgP.toFixed(2)} ₺</div>
+                </div>
+                <div>
+                  <div style="font-size:10px; color:var(--text-muted);">En Yüksek</div>
+                  <div style="font-size:13px; font-weight:700; color:#ef4444;">${maxP.toFixed(2)} ₺</div>
+                </div>
+              </div>
+              <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:4px;">Tüm Alımların Fiyat Geçmişi:</div>
+              <table class="price-history-table">
+                <thead>
+                  <tr>
+                    <th>Tarih</th>
+                    <th>KM</th>
+                    <th>Birim Fiyat</th>
+                    <th>Fark</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rowsHtml}
+                </tbody>
+              </table>
+            `;
+            priceContainer.appendChild(cardDiv);
+          });
+        }
+
+        // 2. SERVİS VE BAKIM ÖZETİ HESAPLAMA
         const totalMaintSpend = maints.reduce((sum, m) => sum + (Number(m.cost) || 0), 0);
         const avgMaintSpend = maints.length > 0 ? (totalMaintSpend / maints.length) : 0;
         const totalFuelSpend = fuels.reduce((sum, f) => sum + (Number(f.cost) || 0), 0);
@@ -1144,7 +1261,63 @@
         document.getElementById('repAvgMaintSpend').textContent = maints.length > 0 ? `${Math.round(avgMaintSpend).toLocaleString('tr-TR')} ₺/servis` : '-';
         document.getElementById('repTotalCarExpense').textContent = `${Math.round(grandTotalCarExpense).toLocaleString('tr-TR')} ₺`;
 
-        // DOLUMLAR ARASI PERİYOT TÜKETİM VE TUTAR TABLOSU
+        // 3. GENEL METRİKLER VE PROJEKSİYON
+        if (fuels.length < 2) {
+          ['repRealCostPerKm','repDailyConsumption','repDailyKm','repDailyCost','repRefuelDistance','repOneYearKm','repRefuelRoutine','repNextRefuelDate','repFullTankRange']
+            .forEach(id => {
+              const el = document.getElementById(id);
+              if (el) el.textContent = 'En az 2 dolum gerekir';
+            });
+        } else {
+          const firstAll = fuels[0];
+          const lastAll = fuels[fuels.length - 1];
+          const d1 = new Date(firstAll.date);
+          const d2 = new Date(lastAll.date);
+          const daysDiff = Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
+          const kmDiff = lastAll.km - firstAll.km;
+
+          let totalSubFuelCost = fuels.reduce((acc, c) => acc + (Number(c.cost) || 0), 0) - (Number(firstAll.cost) || 0);
+
+          if (kmDiff > 0) {
+            const realKmCost = (totalSubFuelCost + totalMaintSpend) / kmDiff;
+            document.getElementById('repRealCostPerKm').textContent = `${realKmCost.toFixed(2)} ₺/km`;
+          } else {
+            document.getElementById('repRealCostPerKm').textContent = `0.00 ₺/km`;
+          }
+
+          const dailyKm = kmDiff / daysDiff;
+          const dailyCost = totalSubFuelCost / daysDiff;
+          document.getElementById('repDailyKm').textContent = `${dailyKm.toFixed(1)} km/gün`;
+          document.getElementById('repDailyCost').textContent = `${dailyCost.toFixed(2)} ₺/gün`;
+
+          const statsSeg = this.calculateSegmentTuketime(fuels, veh);
+          let combinedVol = 0;
+          Object.keys(statsSeg).forEach(k => combinedVol += statsSeg[k].consumedVolume);
+          const dailyVol = combinedVol / daysDiff;
+          document.getElementById('repDailyConsumption').textContent = `${dailyVol.toFixed(2)} ${unit}/gün`;
+
+          const refuelIntervalKm = kmDiff / (fuels.length - 1);
+          document.getElementById('repRefuelDistance').textContent = `${Math.round(refuelIntervalKm)} km`;
+
+          const allLogs = this.data.kmLogs.filter(k => k.vehicleId === this.activeVehicleId);
+          const highestKm = Math.max(lastAll.km, ...allLogs.map(l => l.km));
+          const oneYearKm = Math.round(highestKm + (dailyKm * 365));
+          document.getElementById('repOneYearKm').textContent = `${oneYearKm.toLocaleString('tr-TR')} KM (+${Math.round(dailyKm * 365).toLocaleString('tr-TR')} km)`;
+
+          const routineDays = Math.max(1, Math.round(daysDiff / (fuels.length - 1)));
+          document.getElementById('repRefuelRoutine').textContent = `Ortalama her ${routineDays} günde bir`;
+
+          const nextDate = new Date(d2);
+          nextDate.setDate(nextDate.getDate() + routineDays);
+          document.getElementById('repNextRefuelDate').textContent = nextDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+          const netPer100 = kmDiff > 0 ? ((combinedVol / kmDiff) * 100) : 0;
+          const totalCapacity = (Number(veh.depoKapasitesi) || 0) + (Number(veh.lpgKapasitesi) || 0);
+          const fullTankRange = netPer100 > 0 ? ((totalCapacity / netPer100) * 100) : 0;
+          document.getElementById('repFullTankRange').textContent = `~ ${Math.round(fullTankRange)} km (${totalCapacity} ${unit} ile)`;
+        }
+
+        // 4. EN ALTA TAŞINAN: DOLUMLAR ARASI PERİYOT TÜKETİM VE TUTAR LİSTESİ
         const intervalContainer = document.getElementById('repIntervalPeriodList');
         intervalContainer.innerHTML = '';
 
@@ -1153,7 +1326,6 @@
         } else {
           for (let i = fuels.length - 1; i >= 1; i--) {
             const curr = fuels[i];
-            // Kendi türünün bir önceki kaydını bul, yoksa genel önceki kaydı al
             const sameTypePrevList = fuels.slice(0, i).filter(f => (f.subType || veh.yakitTuru) === (curr.subType || veh.yakitTuru));
             const prev = sameTypePrevList.length > 0 ? sameTypePrevList[sameTypePrevList.length - 1] : fuels[i-1];
 
@@ -1191,111 +1363,6 @@
             intervalContainer.appendChild(itemDiv);
           }
         }
-
-        // YAKIT TÜRÜ BAZLI AYRIŞTIRILMIŞ FİYAT DEĞİŞİM ANALİZİ
-        const fuelTypesMap = {};
-        fuels.forEach(f => {
-          const type = f.subType || veh.yakitTuru;
-          if (!fuelTypesMap[type]) fuelTypesMap[type] = [];
-          fuelTypesMap[type].push(f);
-        });
-
-        const priceContainer = document.getElementById('repFuelPricePerTypeContainer');
-        priceContainer.innerHTML = '';
-
-        Object.keys(fuelTypesMap).forEach(type => {
-          const arr = fuelTypesMap[type];
-          const first = arr[0];
-          const last = arr[arr.length - 1];
-          const firstP = first.volume > 0 ? (first.cost / first.volume) : 0;
-          const lastP = last.volume > 0 ? (last.cost / last.volume) : 0;
-          const diffP = lastP - firstP;
-          const pct = firstP > 0 ? ((diffP / firstP) * 100) : 0;
-
-          let diffBadge = '';
-          if (diffP > 0) {
-            diffBadge = `<span class="badge badge-red">+${diffP.toFixed(2)} ₺ (+%${pct.toFixed(1)}) Artış</span>`;
-          } else if (diffP < 0) {
-            diffBadge = `<span class="badge badge-green">${diffP.toFixed(2)} ₺ (%${pct.toFixed(1)}) Düşüş</span>`;
-          } else {
-            diffBadge = `<span class="badge badge-blue">Sabit Değişmedi</span>`;
-          }
-
-          const cardDiv = document.createElement('div');
-          cardDiv.style.background = '#0f172a';
-          cardDiv.style.padding = '10px 14px';
-          cardDiv.style.borderRadius = '10px';
-          cardDiv.style.border = '1px solid var(--card-border)';
-          cardDiv.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-              <span style="font-weight:700; font-size:13px; color:var(--accent-teal);"><i class="fa-solid fa-gas-pump"></i> ${type} Birim Fiyatı</span>
-              ${diffBadge}
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted);">
-              <span>İlk: <b style="color:#fff;">${firstP.toFixed(2)} ₺</b> (${first.date})</span>
-              <span>➔</span>
-              <span>Son: <b style="color:#fff;">${lastP.toFixed(2)} ₺</b> (${last.date})</span>
-            </div>
-          `;
-          priceContainer.appendChild(cardDiv);
-        });
-
-        // GENEL METRİKLER VE PROJEKSİYON
-        if (fuels.length < 2) {
-          ['repRealCostPerKm','repDailyConsumption','repDailyKm','repDailyCost','repRefuelDistance','repOneYearKm','repRefuelRoutine','repNextRefuelDate','repFullTankRange']
-            .forEach(id => {
-              const el = document.getElementById(id);
-              if (el) el.textContent = 'En az 2 dolum gerekir';
-            });
-          return;
-        }
-
-        const firstAll = fuels[0];
-        const lastAll = fuels[fuels.length - 1];
-        const d1 = new Date(firstAll.date);
-        const d2 = new Date(lastAll.date);
-        const daysDiff = Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
-        const kmDiff = lastAll.km - firstAll.km;
-
-        let totalSubFuelCost = fuels.reduce((acc, c) => acc + (Number(c.cost) || 0), 0) - (Number(firstAll.cost) || 0);
-
-        if (kmDiff > 0) {
-          const realKmCost = (totalSubFuelCost + totalMaintSpend) / kmDiff;
-          document.getElementById('repRealCostPerKm').textContent = `${realKmCost.toFixed(2)} ₺/km`;
-        } else {
-          document.getElementById('repRealCostPerKm').textContent = `0.00 ₺/km`;
-        }
-
-        const dailyKm = kmDiff / daysDiff;
-        const dailyCost = totalSubFuelCost / daysDiff;
-        document.getElementById('repDailyKm').textContent = `${dailyKm.toFixed(1)} km/gün`;
-        document.getElementById('repDailyCost').textContent = `${dailyCost.toFixed(2)} ₺/gün`;
-
-        const statsSeg = this.calculateSegmentTuketime(fuels, veh);
-        let combinedVol = 0;
-        Object.keys(statsSeg).forEach(k => combinedVol += statsSeg[k].consumedVolume);
-        const dailyVol = combinedVol / daysDiff;
-        document.getElementById('repDailyConsumption').textContent = `${dailyVol.toFixed(2)} ${unit}/gün`;
-
-        const refuelIntervalKm = kmDiff / (fuels.length - 1);
-        document.getElementById('repRefuelDistance').textContent = `${Math.round(refuelIntervalKm)} km`;
-
-        const allLogs = this.data.kmLogs.filter(k => k.vehicleId === this.activeVehicleId);
-        const highestKm = Math.max(lastAll.km, ...allLogs.map(l => l.km));
-        const oneYearKm = Math.round(highestKm + (dailyKm * 365));
-        document.getElementById('repOneYearKm').textContent = `${oneYearKm.toLocaleString('tr-TR')} KM (+${Math.round(dailyKm * 365).toLocaleString('tr-TR')} km)`;
-
-        const routineDays = Math.max(1, Math.round(daysDiff / (fuels.length - 1)));
-        document.getElementById('repRefuelRoutine').textContent = `Ortalama her ${routineDays} günde bir`;
-
-        const nextDate = new Date(d2);
-        nextDate.setDate(nextDate.getDate() + routineDays);
-        document.getElementById('repNextRefuelDate').textContent = nextDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-
-        const netPer100 = kmDiff > 0 ? ((combinedVol / kmDiff) * 100) : 0;
-        const totalCapacity = (Number(veh.depoKapasitesi) || 0) + (Number(veh.lpgKapasitesi) || 0);
-        const fullTankRange = netPer100 > 0 ? ((totalCapacity / netPer100) * 100) : 0;
-        document.getElementById('repFullTankRange').textContent = `~ ${Math.round(fullTankRange)} km (${totalCapacity} ${unit} ile)`;
       }
 
       // BACKUP & RESTORE
@@ -1435,6 +1502,119 @@
         this.closeModal('modalVehicle');
       }
 
+      // FUEL ADD & EDIT OPERASYONLARI
+      openAddFuelModal() {
+        const veh = this.getActiveVehicle();
+        document.getElementById('modalFuelTitle').textContent = 'Yakıt / Şarj Alımı Ekle';
+        document.getElementById('fEditId').value = '';
+        document.getElementById('btnFuelSubmit').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Kaydı Ekle';
+
+        const fuels = this.getVehicleFuels();
+        const lastKm = fuels.length > 0 ? fuels[fuels.length - 1].km : null;
+        document.getElementById('fKmHint').textContent = lastKm ? `* Son girilen km: ${lastKm.toLocaleString('tr-TR')}` : '';
+        document.getElementById('lblFuelVolume').textContent = (veh && veh.yakitTuru === 'Elektrik') ? 'Şarj Miktarı (kWh)' : 'Alınan Miktar (Litre)';
+        document.getElementById('dualFuelPickerGroup').style.display = (veh && veh.yakitTuru === 'Benzin + LPG') ? 'block' : 'none';
+        
+        document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('fKm').value = '';
+        document.getElementById('fVolume').value = '';
+        document.getElementById('fCost').value = '';
+        document.getElementById('fTankPercent').value = 100;
+        document.getElementById('lblTankLevelDisplay').textContent = '%100';
+        
+        if (veh && veh.yakitTuru === 'Benzin + LPG') {
+          document.getElementById('radioLpg').checked = true;
+        }
+        this.updateFuelModalCapacityInfo();
+        this.openModal('modalFuel');
+      }
+
+      openEditFuelModal(fuelId) {
+        const fuel = this.data.fuels.find(f => f.id === fuelId);
+        if (!fuel) return;
+        const veh = this.getActiveVehicle();
+
+        document.getElementById('modalFuelTitle').textContent = 'Yakıt Alımını Düzenle';
+        document.getElementById('fEditId').value = fuel.id;
+        document.getElementById('btnFuelSubmit').innerHTML = '<i class="fa-solid fa-check"></i> Değişiklikleri Kaydet';
+
+        document.getElementById('fDate').value = fuel.date || '';
+        document.getElementById('fKm').value = fuel.km || '';
+        document.getElementById('fVolume').value = fuel.volume || '';
+        document.getElementById('fCost').value = fuel.cost || '';
+        
+        const pct = fuel.tankPercent !== undefined ? fuel.tankPercent : 100;
+        document.getElementById('fTankPercent').value = pct;
+        document.getElementById('lblTankLevelDisplay').textContent = `%${pct}`;
+
+        if (veh && veh.yakitTuru === 'Benzin + LPG') {
+          document.getElementById('dualFuelPickerGroup').style.display = 'block';
+          if (fuel.subType === 'Benzin') {
+            document.getElementById('radioBenzin').checked = true;
+          } else {
+            document.getElementById('radioLpg').checked = true;
+          }
+        } else {
+          document.getElementById('dualFuelPickerGroup').style.display = 'none';
+        }
+
+        document.getElementById('lblFuelVolume').textContent = (veh && veh.yakitTuru === 'Elektrik') ? 'Şarj Miktarı (kWh)' : 'Alınan Miktar (Litre)';
+        document.getElementById('fKmHint').textContent = '* Kilometre ve dolum bilgilerini güncelleyebilirsiniz.';
+        this.updateFuelModalCapacityInfo();
+        this.openModal('modalFuel');
+      }
+
+      handleFuelFormSubmit(e) {
+        e.preventDefault();
+        const editId = document.getElementById('fEditId').value;
+        const veh = this.getActiveVehicle();
+        const date = document.getElementById('fDate').value;
+        const km = parseFloat(document.getElementById('fKm').value);
+        const vol = parseFloat(document.getElementById('fVolume').value);
+        const cost = parseFloat(document.getElementById('fCost').value);
+        const tankPct = parseInt(document.getElementById('fTankPercent').value) || 100;
+
+        let subType = veh ? veh.yakitTuru : 'Benzin';
+        if (veh && veh.yakitTuru === 'Benzin + LPG') {
+          const r = document.querySelector('input[name="subFuelType"]:checked');
+          if (r) subType = r.value;
+        }
+
+        if (editId) {
+          const item = this.data.fuels.find(f => f.id === editId);
+          if (item) {
+            item.date = date;
+            item.km = km;
+            item.volume = vol;
+            item.cost = cost;
+            item.subType = subType;
+            item.tankPercent = tankPct;
+          }
+        } else {
+          this.data.fuels.push({
+            id: 'f_' + Date.now(),
+            vehicleId: this.activeVehicleId,
+            subType: subType,
+            date: date,
+            km: km,
+            volume: vol,
+            cost: cost,
+            tankPercent: tankPct
+          });
+        }
+
+        this.saveStorage();
+        this.renderAll();
+        this.closeModal('modalFuel');
+      }
+
+      deleteFuel(id) {
+        if (!confirm('Bu yakıt kaydını silmek istediğinize emin misiniz?')) return;
+        this.data.fuels = this.data.fuels.filter(f => f.id !== id);
+        this.saveStorage();
+        this.renderAll();
+      }
+
       updateFuelModalCapacityInfo() {
         const veh = this.getActiveVehicle();
         if (!veh) return;
@@ -1451,17 +1631,6 @@
 
       openModal(id) {
         document.getElementById(id).classList.add('active');
-        if (id === 'modalFuel') {
-          const veh = this.getActiveVehicle();
-          const fuels = this.getVehicleFuels();
-          const lastKm = fuels.length > 0 ? fuels[fuels.length - 1].km : null;
-          document.getElementById('fKmHint').textContent = lastKm ? `* Son girilen km: ${lastKm.toLocaleString('tr-TR')}` : '';
-          document.getElementById('lblFuelVolume').textContent = (veh && veh.yakitTuru === 'Elektrik') ? 'Şarj Miktarı (kWh)' : 'Alınan Miktar (Litre)';
-          document.getElementById('dualFuelPickerGroup').style.display = (veh && veh.yakitTuru === 'Benzin + LPG') ? 'block' : 'none';
-          document.getElementById('fTankPercent').value = 100;
-          document.getElementById('lblTankLevelDisplay').textContent = '%100';
-          this.updateFuelModalCapacityInfo();
-        }
       }
 
       closeModal(id) {
@@ -1487,45 +1656,6 @@
         const isDual = type === 'Benzin + LPG';
         document.getElementById('lblMainCapacity').textContent = isEv ? 'Batarya Kapasitesi (kWh)' : 'Depo Kapasitesi (Litre)';
         document.getElementById('groupLpgCapacity').style.display = isDual ? 'block' : 'none';
-      }
-
-      saveFuel(e) {
-        e.preventDefault();
-        const veh = this.getActiveVehicle();
-        const date = document.getElementById('fDate').value;
-        const km = parseFloat(document.getElementById('fKm').value);
-        const vol = parseFloat(document.getElementById('fVolume').value);
-        const cost = parseFloat(document.getElementById('fCost').value);
-        const tankPct = parseInt(document.getElementById('fTankPercent').value) || 100;
-
-        let subType = veh ? veh.yakitTuru : 'Benzin';
-        if (veh && veh.yakitTuru === 'Benzin + LPG') {
-          const r = document.querySelector('input[name="subFuelType"]:checked');
-          if (r) subType = r.value;
-        }
-
-        this.data.fuels.push({
-          id: 'f_' + Date.now(),
-          vehicleId: this.activeVehicleId,
-          subType: subType,
-          date: date,
-          km: km,
-          volume: vol,
-          cost: cost,
-          tankPercent: tankPct
-        });
-
-        this.saveStorage();
-        this.renderAll();
-        this.closeModal('modalFuel');
-        e.target.reset();
-      }
-
-      deleteFuel(id) {
-        if (!confirm('Bu yakıt kaydını silmek istediğinize emin misiniz?')) return;
-        this.data.fuels = this.data.fuels.filter(f => f.id !== id);
-        this.saveStorage();
-        this.renderAll();
       }
 
       saveKmLog(e) {
