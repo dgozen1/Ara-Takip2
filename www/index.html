@@ -47,7 +47,7 @@
 
     .btn-primary { background: linear-gradient(135deg, var(--accent-teal), #0d9488); color: #fff; border: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 14px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3); }
     .btn-secondary { background: #334155; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; }
-    .btn-danger { background: #ef4444; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; }
+    .btn-danger { background: #ef4444; color: #fff; border: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 14px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
     .btn-danger-outline { background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 6px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
     .btn-edit-outline { background: transparent; border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 6px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
 
@@ -65,8 +65,8 @@
     .list-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
 
     nav.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.98); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 8px 0 12px; z-index: 20; backdrop-filter: blur(10px); }
-    .nav-btn { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; transition: 0.2s; }
-    .nav-btn i { font-size: 18px; }
+    .nav-btn { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 9px; font-weight: 600; cursor: pointer; flex: 1; transition: 0.2s; }
+    .nav-btn i { font-size: 17px; }
     .nav-btn.active { color: var(--accent-teal); transform: translateY(-2px); }
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100; backdrop-filter: blur(4px); }
@@ -98,6 +98,16 @@
     .price-history-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
     .price-history-table th { color: var(--text-muted); text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--card-border); }
     .price-history-table td { padding: 6px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+
+    /* GPS Dashboard Specific */
+    .gps-hud-container { background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%); border: 2px solid var(--card-border); border-radius: 20px; padding: 24px 16px; text-align: center; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: relative; overflow: hidden; }
+    .gps-live-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; display: inline-block; margin-right: 6px; }
+    .gps-live-dot.active { background: #22c55e; box-shadow: 0 0 12px #22c55e; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
+    .gps-speed-display { font-size: 56px; font-weight: 900; color: #fff; line-height: 1; font-variant-numeric: tabular-nums; }
+    .gps-metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; border-top: 1px solid var(--card-border); padding-top: 16px; }
+    .gps-metric-item div:first-child { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+    .gps-metric-item div:last-child { font-size: 18px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
   </style>
 </head>
 <body>
@@ -168,7 +178,63 @@
       </div>
     </section>
 
-    <!-- TAB 2: KM LOG -->
+    <!-- TAB 2: GPS CANLI SÜRÜŞ VE MALİYET SAYACI -->
+    <section id="tab-gps" class="tab-content">
+      <div class="gps-hud-container">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:12px; color:var(--text-muted);">
+          <span><span class="gps-live-dot" id="gpsLiveDot"></span><b id="gpsStatusText">GPS Hazır</b></span>
+          <span id="gpsAccuracyText">Hassasiyet: -</span>
+        </div>
+
+        <div style="margin: 10px 0;">
+          <div class="gps-speed-display" id="gpsSpeedVal">0</div>
+          <div style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-top:2px;">KM / SAAT</div>
+        </div>
+
+        <div class="gps-metrics-grid">
+          <div class="gps-metric-item">
+            <div>MESAFE</div>
+            <div style="color:var(--accent-blue);" id="gpsDistanceVal">0.00 <span style="font-size:12px;">km</span></div>
+          </div>
+          <div class="gps-metric-item">
+            <div>SÜRE</div>
+            <div style="color:var(--accent-amber);" id="gpsTimeVal">00:00:00</div>
+          </div>
+          <div class="gps-metric-item">
+            <div>ANLIK MALİYET</div>
+            <div style="color:var(--accent-teal);" id="gpsLiveCostVal">0.00 <span style="font-size:12px;">₺</span></div>
+          </div>
+        </div>
+
+        <div style="font-size:11px; color:var(--accent-purple); margin-top:10px; font-weight:600;" id="gpsLiveFuelVolumeText">
+          Harcanan Yakıt: 0.00 LT
+        </div>
+
+        <div style="font-size:11px; color:var(--text-muted); margin-top:8px; text-align:center;" id="gpsFuelRateSummary">
+          * Yakıt tüketim katsayınız: -
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+        <button class="btn-primary" id="btnStartGps" onclick="app.startGpsTracking()">
+          <i class="fa-solid fa-play"></i> GPS Sürüş Takibini Başlat
+        </button>
+        <button class="btn-danger" id="btnStopGps" style="display:none;" onclick="app.stopGpsTracking()">
+          <i class="fa-solid fa-stop"></i> Sürüşü Bitir & Kaydet
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-satellite-dish"></i> Canlı Sürüş Asistanı</div>
+        <div style="font-size:12px; color:var(--text-muted); line-height:1.5;">
+          • Sürüş başladığında GPS koordinatlarınız üzerinden kat edilen mesafe gerçek zamanlı ölçülür.<br>
+          • Çift yakıtlı araçlarda hem LPG hem Benzin tüketiminiz, tek yakıtlı araçlarda aktif ortalamanız baz alınarak yoldaki anlık maliyetiniz hesaplanır.<br>
+          • Sürüş sonunda kaydı hem <b>Rotalar</b> listesine hem de <b>KM Sayaç Günlüğü</b>'ne tek tıkla işleyebilirsiniz.
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: KM LOG -->
     <section id="tab-kmlog" class="tab-content">
       <div style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -182,7 +248,7 @@
       </div>
     </section>
 
-    <!-- TAB 3: ROUTE (ROTA) -->
+    <!-- TAB 4: ROUTE (ROTA) -->
     <section id="tab-route" class="tab-content">
       <div style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -206,7 +272,7 @@
       <div class="item-list" id="routeList"></div>
     </section>
 
-    <!-- TAB 4: GARAGE & DOCS & MAINTENANCE -->
+    <!-- TAB 5: GARAGE & DOCS & MAINTENANCE -->
     <section id="tab-garage" class="tab-content">
       <div class="sub-tabs">
         <button class="sub-tab-btn active" onclick="app.switchGarageSubTab('docs', this)"><i class="fa-solid fa-file-shield"></i> Evrak & Poliçeler</button>
@@ -255,20 +321,18 @@
       </div>
     </section>
 
-    <!-- TAB 5: REPORTS & PREDICTIONS -->
+    <!-- TAB 6: REPORTS & PREDICTIONS -->
     <section id="tab-reports" class="tab-content">
       <div class="card" style="border-left:4px solid var(--accent-teal);">
         <h2 style="font-size:16px; font-weight:700; margin-bottom:4px;">Gelişmiş Tüketim ve Fiyat Analizi</h2>
         <div style="font-size:12px; color:var(--text-muted);">Bağımsız yakıt hatları ve dinamik depo modelleri</div>
       </div>
 
-      <!-- 1. PROFESYONEL YAKIT FİYAT DEĞİŞİM ANALİZİ -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-arrow-trend-up"></i> Yakıt Türü Bazlı Fiyat Değişim Analizi</div>
         <div id="repFuelPricePerTypeContainer" style="display:flex; flex-direction:column; gap:12px;"></div>
       </div>
 
-      <!-- 2. SERVİS VE BAKIM ÖZETİ -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-wrench"></i> Servis, Bakım ve Genel Araç Masrafı</div>
         <div class="metric-row">
@@ -289,7 +353,6 @@
         </div>
       </div>
 
-      <!-- 3. GENEL METRİKLER VE PROJEKSİYON -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-chart-line"></i> Genel Tüketim ve Projeksiyon</div>
         <div class="metric-row">
@@ -326,7 +389,6 @@
         </div>
       </div>
 
-      <!-- 4. EN ALTA KONUMLANDIRILAN: DOLUMLAR ARASI PERİYOT TÜKETİM VE TUTAR LİSTESİ -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-timeline"></i> İki Dolum Arası Geçen Tüketim ve Tutar</div>
         <div class="item-list" id="repIntervalPeriodList"></div>
@@ -334,9 +396,10 @@
     </section>
   </main>
 
-  <!-- Bottom Navigation -->
+  <!-- Bottom Navigation (6 SEKME) -->
   <nav class="bottom-nav">
     <button class="nav-btn active" onclick="app.switchTab('dashboard', this)"><i class="fa-solid fa-gauge"></i><span>Panel</span></button>
+    <button class="nav-btn" onclick="app.switchTab('gps', this)"><i class="fa-solid fa-location-arrow"></i><span>Sürüş</span></button>
     <button class="nav-btn" onclick="app.switchTab('kmlog', this)"><i class="fa-solid fa-tachometer-alt"></i><span>KM Log</span></button>
     <button class="nav-btn" onclick="app.switchTab('route', this)"><i class="fa-solid fa-route"></i><span>Rota</span></button>
     <button class="nav-btn" onclick="app.switchTab('garage', this)"><i class="fa-solid fa-warehouse"></i><span>Garaj</span></button>
@@ -344,6 +407,39 @@
   </nav>
 
   <!-- MODALS -->
+
+  <!-- Modal: Finish GPS Trip Save -->
+  <div class="modal-overlay" id="modalGpsTripSave">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>GPS Sürüşünü Kaydet</h3>
+        <button class="btn-close" onclick="app.closeModal('modalGpsTripSave')">&times;</button>
+      </div>
+      <form onsubmit="app.saveCompletedGpsTrip(event)">
+        <div class="card" style="background:#0f172a; margin-bottom:12px; padding:12px;">
+          <div style="font-size:12px; color:var(--text-muted);">Ölçülen Mesafe: <b id="gpsModalDist" style="color:#fff;">-</b></div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Seyahat Süresi: <b id="gpsModalDuration" style="color:var(--accent-blue);">-</b></div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Tahmini Sarfiyat: <b id="gpsModalFuelVol" style="color:var(--accent-purple);">-</b></div>
+          <div style="font-size:15px; font-weight:700; color:var(--accent-teal); margin-top:6px;">Yakıt Maliyeti: <b id="gpsModalCost">-</b></div>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">Başlangıç Noktası</label>
+            <input type="text" class="form-control" id="gpsTripFrom" placeholder="Örn: Ev / İş" required>
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">Varış Noktası</label>
+            <input type="text" class="form-control" id="gpsTripTo" placeholder="Örn: Merkez" required>
+          </div>
+        </div>
+        <div class="form-group" style="display:flex; align-items:center; gap:8px; background:#0f172a; padding:10px; border-radius:8px; border:1px solid var(--card-border);">
+          <input type="checkbox" id="gpsUpdateOdometer" checked style="width:16px; height:16px; accent-color:var(--accent-teal);">
+          <label for="gpsUpdateOdometer" style="font-size:12px; color:#cbd5e1; cursor:pointer;">Bu mesafeyi aracın son KM sayacına ekleyip <b>KM Log</b>'a da kaydet</label>
+        </div>
+        <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Seyahati Kaydet</button>
+      </form>
+    </div>
+  </div>
 
   <!-- Modal: Backup & Restore -->
   <div class="modal-overlay" id="modalBackup">
@@ -494,7 +590,7 @@
     </div>
   </div>
 
-  <!-- Modal: Route Add (ÇİFT YAKITLI DETAYLI CANLI ÖNİZLEME İLE) -->
+  <!-- Modal: Route Add -->
   <div class="modal-overlay" id="modalRoute">
     <div class="modal-box">
       <div class="modal-header">
@@ -599,6 +695,15 @@
         this.STORAGE_KEY = 'ototakip_pro_data_v1';
         this.data = this.loadData();
         this.activeVehicleId = this.data.activeVehicleId || (this.data.vehicles[0] ? this.data.vehicles[0].id : null);
+
+        // GPS Sürüş Değişkenleri
+        this.gpsWatchId = null;
+        this.gpsTimerId = null;
+        this.gpsWakeLock = null;
+        this.gpsTotalDistanceKm = 0;
+        this.gpsLastPosition = null;
+        this.gpsElapsedSeconds = 0;
+
         this.init();
       }
 
@@ -647,7 +752,7 @@
             { id: 'k1', vehicleId: 'v1', date: '2026-10-22', km: 146200, note: 'Haftalık kontrol' }
           ],
           routes: [
-            { id: 'r1', vehicleId: 'v1', date: '2026-10-28', from: 'Denizli', to: 'İzmir', km: 235, volume: 12.9, cost: 593 }
+            { id: 'r1', vehicleId: 'v1', date: '2026-10-28', from: 'Denizli', to: 'İzmir', km: 235, volumeDetail: '14.1 LT Dizel', cost: 593 }
           ],
           maintenances: [
             { id: 'm1', vehicleId: 'v1', type: 'Periyodik Bakım', date: '2026-08-10', km: 140000, service: 'Özel Servis', cost: 3200, nextKm: 155000, notes: 'Yağ ve filtreler' }
@@ -722,6 +827,7 @@
         this.renderRoutes();
         this.renderGarage();
         this.renderReports();
+        this.updateGpsRateSummary();
       }
 
       getVehicleFuels() {
@@ -744,7 +850,6 @@
         return Number(veh.depoKapasitesi) || 50;
       }
 
-      // BAĞIMSIZ HATLI TÜKETİM VE SON BİRİM FİYAT ANALİZİ
       calculateSegmentTuketime(fuels, veh) {
         const fuelTypesMap = {};
         fuels.forEach(f => {
@@ -774,7 +879,6 @@
             }
           }
 
-          // Son alınan birim fiyat
           let lastUnitPrice = 0;
           if (arr.length > 0) {
             const lastF = arr[arr.length - 1];
@@ -792,24 +896,22 @@
         return perTypeStats;
       }
 
-      // ROTA PLANLAMA İÇİN GELİŞMİŞ ÇİFT YAKIT VERİ MODELİ
       getRouteReferenceMetrics(veh, fuels) {
         const isEv = veh.yakitTuru === 'Elektrik';
         const unit = isEv ? 'kWh' : 'LT';
         const stats = this.calculateSegmentTuketime(fuels, veh);
 
         if (veh.yakitTuru === 'Benzin + LPG') {
-          // LPG ve Benzin tüketimlerini ayrı ayrı al
           const lpgPer100 = (stats['LPG'] && stats['LPG'].per100 > 0) ? stats['LPG'].per100 : 8.5;
           const bznPer100 = (stats['Benzin'] && stats['Benzin'].per100 > 0) ? stats['Benzin'].per100 : 1.5;
           
           const lpgPrice = (stats['LPG'] && stats['LPG'].lastUnitPrice > 0) ? stats['LPG'].lastUnitPrice : 51.5;
           const bznPrice = (stats['Benzin'] && stats['Benzin'].lastUnitPrice > 0) ? stats['Benzin'].lastUnitPrice : 76.5;
 
-          // 100 km'lik karma sürüş maliyeti ve ağırlıklı birim fiyat
           const cost100 = (lpgPer100 * lpgPrice) + (bznPer100 * bznPrice);
           const totalVol100 = lpgPer100 + bznPer100;
           const weightedUnitPrice = totalVol100 > 0 ? (cost100 / totalVol100) : 0;
+          const costPerKm = cost100 / 100;
 
           return {
             isDual: true,
@@ -819,11 +921,11 @@
             bznPrice,
             totalVol100,
             weightedUnitPrice,
+            costPerKm,
             displayConsumption: `${lpgPer100.toFixed(1)} LT LPG + ${bznPer100.toFixed(1)} LT Benzin / 100km`,
             displayPrice: `${weightedUnitPrice.toFixed(2)} ₺/LT (Karma Ağırlıklı)`
           };
         } else {
-          // Tek yakıtlı araçlar
           let singlePer100 = 6.0;
           let singlePrice = 45.0;
 
@@ -831,16 +933,247 @@
           if (stats[type] && stats[type].per100 > 0) singlePer100 = stats[type].per100;
           if (stats[type] && stats[type].lastUnitPrice > 0) singlePrice = stats[type].lastUnitPrice;
 
+          const costPerKm = (singlePer100 * singlePrice) / 100;
+
           return {
             isDual: false,
             singlePer100,
             singlePrice,
+            costPerKm,
             displayConsumption: `${singlePer100.toFixed(1)} ${unit}/100 km`,
             displayPrice: `${singlePrice.toFixed(2)} ₺/${unit}`
           };
         }
       }
 
+      /* ----------------------------------------------------
+         GPS CANLI SÜRÜŞ MOTORU & KADRAN MANTIĞI
+      ---------------------------------------------------- */
+      updateGpsRateSummary() {
+        const veh = this.getActiveVehicle();
+        if (!veh) return;
+        const fuels = this.getVehicleFuels();
+        const m = this.getRouteReferenceMetrics(veh, fuels);
+        const labelEl = document.getElementById('gpsFuelRateSummary');
+        if (labelEl) {
+          labelEl.textContent = `* Aktif Model: ${m.displayConsumption} (~${m.costPerKm.toFixed(2)} ₺/km)`;
+        }
+      }
+
+      calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Dünya yarıçapı (km)
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+      }
+
+      async requestWakeLock() {
+        try {
+          if ('wakeLock' in navigator) {
+            this.gpsWakeLock = await navigator.wakeLock.request('screen');
+          }
+        } catch (err) {
+          console.warn('WakeLock alınamadı:', err);
+        }
+      }
+
+      releaseWakeLock() {
+        if (this.gpsWakeLock !== null) {
+          this.gpsWakeLock.release().catch(() => {});
+          this.gpsWakeLock = null;
+        }
+      }
+
+      startGpsTracking() {
+        if (!navigator.geolocation) {
+          alert('Cihazınızda GPS / Konum desteği bulunamadı!');
+          return;
+        }
+
+        this.gpsTotalDistanceKm = 0;
+        this.gpsLastPosition = null;
+        this.gpsElapsedSeconds = 0;
+
+        document.getElementById('gpsSpeedVal').textContent = '0';
+        document.getElementById('gpsDistanceVal').innerHTML = '0.00 <span style="font-size:12px;">km</span>';
+        document.getElementById('gpsTimeVal').textContent = '00:00:00';
+        document.getElementById('gpsLiveCostVal').innerHTML = '0.00 <span style="font-size:12px;">₺</span>';
+        document.getElementById('gpsLiveFuelVolumeText').textContent = 'Harcanan Yakıt: 0.00 LT';
+
+        document.getElementById('gpsLiveDot').classList.add('active');
+        document.getElementById('gpsStatusText').textContent = 'GPS Sinyali Bekleniyor...';
+        document.getElementById('btnStartGps').style.display = 'none';
+        document.getElementById('btnStopGps').style.display = 'flex';
+
+        this.requestWakeLock();
+
+        this.gpsTimerId = setInterval(() => {
+          this.gpsElapsedSeconds++;
+          const hrs = String(Math.floor(this.gpsElapsedSeconds / 3600)).padStart(2, '0');
+          const mins = String(Math.floor((this.gpsElapsedSeconds % 3600) / 60)).padStart(2, '0');
+          const secs = String(this.gpsElapsedSeconds % 60).padStart(2, '0');
+          document.getElementById('gpsTimeVal').textContent = `${hrs}:${mins}:${secs}`;
+        }, 1000);
+
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        };
+
+        this.gpsWatchId = navigator.geolocation.watchPosition(
+          (pos) => this.handleGpsUpdate(pos),
+          (err) => {
+            console.warn('GPS Hatası:', err);
+            document.getElementById('gpsStatusText').textContent = 'Konum İzni / Açık Alan Gerekli';
+          },
+          options
+        );
+      }
+
+      handleGpsUpdate(pos) {
+        const { latitude, longitude, speed, accuracy } = pos.coords;
+
+        document.getElementById('gpsAccuracyText').textContent = `Hassasiyet: ±${Math.round(accuracy)}m`;
+        document.getElementById('gpsStatusText').textContent = 'GPS Canlı Takipte';
+
+        const currentSpeedKmh = (speed && speed > 0.5) ? Math.round(speed * 3.6) : 0;
+        document.getElementById('gpsSpeedVal').textContent = currentSpeedKmh;
+
+        if (this.gpsLastPosition) {
+          const deltaKm = this.calculateHaversineDistance(
+            this.gpsLastPosition.latitude,
+            this.gpsLastPosition.longitude,
+            latitude,
+            longitude
+          );
+
+          // GPS sapmalarını filtrelemek için en az 5 metrelik anlamlı hareketi ekle
+          if (deltaKm >= 0.005 && accuracy <= 60) {
+            this.gpsTotalDistanceKm += deltaKm;
+            this.gpsLastPosition = { latitude, longitude };
+          }
+        } else {
+          this.gpsLastPosition = { latitude, longitude };
+        }
+
+        document.getElementById('gpsDistanceVal').innerHTML = `${this.gpsTotalDistanceKm.toFixed(2)} <span style="font-size:12px;">km</span>`;
+
+        const veh = this.getActiveVehicle();
+        const fuels = this.getVehicleFuels();
+        const m = this.getRouteReferenceMetrics(veh, fuels);
+        const liveCost = this.gpsTotalDistanceKm * m.costPerKm;
+        document.getElementById('gpsLiveCostVal').innerHTML = `${liveCost.toFixed(2)} <span style="font-size:12px;">₺</span>`;
+
+        if (m.isDual) {
+          const lpgUsed = (this.gpsTotalDistanceKm * m.lpgPer100) / 100;
+          const bznUsed = (this.gpsTotalDistanceKm * m.bznPer100) / 100;
+          document.getElementById('gpsLiveFuelVolumeText').textContent = `Harcanan: ${lpgUsed.toFixed(2)} LT LPG + ${bznUsed.toFixed(2)} LT Benzin`;
+        } else {
+          const singleUsed = (this.gpsTotalDistanceKm * m.singlePer100) / 100;
+          const unit = veh.yakitTuru === 'Elektrik' ? 'kWh' : 'LT';
+          document.getElementById('gpsLiveFuelVolumeText').textContent = `Harcanan Enerji: ${singleUsed.toFixed(2)} ${unit}`;
+        }
+      }
+
+      stopGpsTracking() {
+        if (this.gpsWatchId !== null) {
+          navigator.geolocation.clearWatch(this.gpsWatchId);
+          this.gpsWatchId = null;
+        }
+        if (this.gpsTimerId !== null) {
+          clearInterval(this.gpsTimerId);
+          this.gpsTimerId = null;
+        }
+        this.releaseWakeLock();
+
+        document.getElementById('gpsLiveDot').classList.remove('active');
+        document.getElementById('gpsStatusText').textContent = 'Sürüş Tamamlandı';
+        document.getElementById('btnStartGps').style.display = 'flex';
+        document.getElementById('btnStopGps').style.display = 'none';
+
+        const veh = this.getActiveVehicle();
+        const fuels = this.getVehicleFuels();
+        const m = this.getRouteReferenceMetrics(veh, fuels);
+        const totalTripCost = this.gpsTotalDistanceKm * m.costPerKm;
+
+        let volDetail = '';
+        if (m.isDual) {
+          const lpgV = (this.gpsTotalDistanceKm * m.lpgPer100) / 100;
+          const bznV = (this.gpsTotalDistanceKm * m.bznPer100) / 100;
+          volDetail = `${lpgV.toFixed(2)} LT LPG + ${bznV.toFixed(2)} LT Benzin`;
+        } else {
+          const sV = (this.gpsTotalDistanceKm * m.singlePer100) / 100;
+          const unit = veh.yakitTuru === 'Elektrik' ? 'kWh' : 'LT';
+          volDetail = `${sV.toFixed(2)} ${unit}`;
+        }
+
+        document.getElementById('gpsModalDist').textContent = `${this.gpsTotalDistanceKm.toFixed(2)} KM`;
+        document.getElementById('gpsModalDuration').textContent = document.getElementById('gpsTimeVal').textContent;
+        document.getElementById('gpsModalFuelVol').textContent = volDetail;
+        document.getElementById('gpsModalCost').textContent = `${totalTripCost.toFixed(2)} ₺`;
+
+        this.openModal('modalGpsTripSave');
+      }
+
+      saveCompletedGpsTrip(e) {
+        e.preventDefault();
+        const from = document.getElementById('gpsTripFrom').value.trim();
+        const to = document.getElementById('gpsTripTo').value.trim();
+        const km = parseFloat(this.gpsTotalDistanceKm.toFixed(2));
+        const today = new Date().toISOString().split('T')[0];
+        
+        const veh = this.getActiveVehicle();
+        const fuels = this.getVehicleFuels();
+        const m = this.getRouteReferenceMetrics(veh, fuels);
+        const cost = parseFloat((km * m.costPerKm).toFixed(2));
+        const volDetail = document.getElementById('gpsModalFuelVol').textContent + ' (GPS)';
+
+        // 1. Rotalara Ekle
+        this.data.routes.push({
+          id: 'r_gps_' + Date.now(),
+          vehicleId: this.activeVehicleId,
+          date: today,
+          from: from,
+          to: to,
+          km: km,
+          volumeDetail: volDetail,
+          cost: cost
+        });
+
+        // 2. İstenirse KM Sayaç Günlüğüne de otomatik ekle
+        const addOdo = document.getElementById('gpsUpdateOdometer').checked;
+        if (addOdo && km > 0) {
+          const vLogs = this.data.kmLogs.filter(k => k.vehicleId === this.activeVehicleId);
+          const maxFuelKm = fuels.length > 0 ? fuels[fuels.length - 1].km : 0;
+          const maxLogKm = vLogs.length > 0 ? Math.max(...vLogs.map(l => l.km)) : 0;
+          const baseKm = Math.max(maxFuelKm, maxLogKm);
+
+          if (baseKm > 0) {
+            this.data.kmLogs.push({
+              id: 'k_gps_' + Date.now(),
+              vehicleId: this.activeVehicleId,
+              date: today,
+              km: Math.round((baseKm + km) * 10) / 10,
+              note: `GPS Sürüş: ${from} ➔ ${to} (+${km} km)`
+            });
+          }
+        }
+
+        this.saveStorage();
+        this.renderAll();
+        this.closeModal('modalGpsTripSave');
+        e.target.reset();
+        alert('GPS sürüş kaydınız başarıyla kaydedildi!');
+      }
+
+      /* ----------------------------------------------------
+         STANDART PANEL VE YÖNETİM METOTLARI
+      ---------------------------------------------------- */
       renderDashboard() {
         const veh = this.getActiveVehicle();
         const fuels = this.getVehicleFuels();
@@ -1015,7 +1348,6 @@
         const fuels = this.getVehicleFuels();
         const routes = this.data.routes.filter(r => r.vehicleId === this.activeVehicleId);
 
-        // Gelişmiş çift yakıtlı rota metrikleri
         const routeMetrics = this.getRouteReferenceMetrics(veh, fuels);
         document.getElementById('routeRefConsumption').textContent = routeMetrics.displayConsumption;
         document.getElementById('routeRefPrice').textContent = routeMetrics.displayPrice;
@@ -1026,7 +1358,8 @@
           return;
         }
 
-        routes.forEach(r => {
+        const revRoutes = [...routes].reverse();
+        revRoutes.forEach(r => {
           const el = document.createElement('div');
           el.className = 'list-item';
           el.innerHTML = `
@@ -1085,8 +1418,6 @@
 
       saveRoute(e) {
         e.preventDefault();
-        const veh = this.getActiveVehicle();
-        const fuels = this.getVehicleFuels();
         const date = document.getElementById('rDate').value;
         const from = document.getElementById('rFrom').value.trim();
         const to = document.getElementById('rTo').value.trim();
