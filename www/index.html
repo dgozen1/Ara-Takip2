@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>OtoTakip Pro</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Leaflet Harita CSS ve JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     :root {
       --bg-dark: #0f172a;
@@ -50,6 +53,7 @@
     .btn-danger { background: #ef4444; color: #fff; border: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 14px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
     .btn-danger-outline { background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 6px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
     .btn-edit-outline { background: transparent; border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 6px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+    .btn-map-outline { background: rgba(20, 184, 166, 0.15); border: 1px solid var(--accent-teal); color: var(--accent-teal); padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
 
     .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
     .badge-teal { background: rgba(20, 184, 166, 0.15); color: var(--accent-teal); }
@@ -62,19 +66,19 @@
     .item-list { display: flex; flex-direction: column; gap: 10px; }
     .list-item { background: #162032; border: 1px solid #283548; border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; }
     .list-item-left { display: flex; align-items: center; gap: 12px; }
-    .list-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+    .list-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
 
     nav.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.98); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 8px 0 12px; z-index: 20; backdrop-filter: blur(10px); }
     .nav-btn { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 9px; font-weight: 600; cursor: pointer; flex: 1; transition: 0.2s; }
     .nav-btn i { font-size: 17px; }
     .nav-btn.active { color: var(--accent-teal); transform: translateY(-2px); }
 
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100; backdrop-filter: blur(4px); }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.78); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 1000; backdrop-filter: blur(4px); }
     .modal-overlay.active { display: flex; }
     .modal-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--card-border); padding-bottom: 10px; }
     .modal-header h3 { font-size: 16px; font-weight: 700; color: #fff; }
-    .btn-close { background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; }
+    .btn-close { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
 
     .form-group { margin-bottom: 14px; }
     .form-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
@@ -99,15 +103,17 @@
     .price-history-table th { color: var(--text-muted); text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--card-border); }
     .price-history-table td { padding: 6px; border-bottom: 1px solid rgba(255,255,255,0.03); }
 
-    /* GPS Dashboard Specific */
-    .gps-hud-container { background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%); border: 2px solid var(--card-border); border-radius: 20px; padding: 24px 16px; text-align: center; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: relative; overflow: hidden; }
+    /* GPS Dashboard & Map Specific */
+    .gps-hud-container { background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%); border: 2px solid var(--card-border); border-radius: 18px; padding: 16px; text-align: center; margin-bottom: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     .gps-live-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; display: inline-block; margin-right: 6px; }
     .gps-live-dot.active { background: #22c55e; box-shadow: 0 0 12px #22c55e; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
-    .gps-speed-display { font-size: 56px; font-weight: 900; color: #fff; line-height: 1; font-variant-numeric: tabular-nums; }
-    .gps-metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; border-top: 1px solid var(--card-border); padding-top: 16px; }
-    .gps-metric-item div:first-child { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-    .gps-metric-item div:last-child { font-size: 18px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+    .gps-speed-display { font-size: 46px; font-weight: 900; color: #fff; line-height: 1; font-variant-numeric: tabular-nums; }
+    .gps-metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; border-top: 1px solid var(--card-border); padding-top: 12px; }
+    .gps-metric-item div:first-child { font-size: 10px; color: var(--text-muted); margin-bottom: 3px; }
+    .gps-metric-item div:last-child { font-size: 16px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+    #liveGpsMap { width: 100%; height: 220px; border-radius: 14px; border: 1px solid var(--card-border); margin-bottom: 14px; z-index: 1; background: #0f172a; }
+    #savedRouteMap { width: 100%; height: 300px; border-radius: 12px; border: 1px solid var(--card-border); margin-bottom: 12px; z-index: 1; background: #0f172a; }
   </style>
 </head>
 <body>
@@ -178,23 +184,23 @@
       </div>
     </section>
 
-    <!-- TAB 2: GPS CANLI SÜRÜŞ VE MALİYET SAYACI -->
+    <!-- TAB 2: GPS CANLI SÜRÜŞ VE HARİTALI ROTA TAKİBİ -->
     <section id="tab-gps" class="tab-content">
       <div class="gps-hud-container">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:12px; color:var(--text-muted);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:11px; color:var(--text-muted);">
           <span><span class="gps-live-dot" id="gpsLiveDot"></span><b id="gpsStatusText">GPS Hazır</b></span>
-          <span id="gpsAccuracyText">Hassasiyet: -</span>
+          <span id="gpsAccuracyText">Konum: Bekleniyor</span>
         </div>
 
-        <div style="margin: 10px 0;">
+        <div style="margin: 6px 0;">
           <div class="gps-speed-display" id="gpsSpeedVal">0</div>
-          <div style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-top:2px;">KM / SAAT</div>
+          <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">KM / SAAT</div>
         </div>
 
         <div class="gps-metrics-grid">
           <div class="gps-metric-item">
             <div>MESAFE</div>
-            <div style="color:var(--accent-blue);" id="gpsDistanceVal">0.00 <span style="font-size:12px;">km</span></div>
+            <div style="color:var(--accent-blue);" id="gpsDistanceVal">0.00 <span style="font-size:11px;">km</span></div>
           </div>
           <div class="gps-metric-item">
             <div>SÜRE</div>
@@ -202,35 +208,29 @@
           </div>
           <div class="gps-metric-item">
             <div>ANLIK MALİYET</div>
-            <div style="color:var(--accent-teal);" id="gpsLiveCostVal">0.00 <span style="font-size:12px;">₺</span></div>
+            <div style="color:var(--accent-teal);" id="gpsLiveCostVal">0.00 <span style="font-size:11px;">₺</span></div>
           </div>
         </div>
 
-        <div style="font-size:11px; color:var(--accent-purple); margin-top:10px; font-weight:600;" id="gpsLiveFuelVolumeText">
+        <div style="font-size:11px; color:var(--accent-purple); margin-top:8px; font-weight:600;" id="gpsLiveFuelVolumeText">
           Harcanan Yakıt: 0.00 LT
-        </div>
-
-        <div style="font-size:11px; color:var(--text-muted); margin-top:8px; text-align:center;" id="gpsFuelRateSummary">
-          * Yakıt tüketim katsayınız: -
         </div>
       </div>
 
-      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+      <!-- Canlı Harita Alanı -->
+      <div id="liveGpsMap"></div>
+
+      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
         <button class="btn-primary" id="btnStartGps" onclick="app.startGpsTracking()">
           <i class="fa-solid fa-play"></i> GPS Sürüş Takibini Başlat
         </button>
         <button class="btn-danger" id="btnStopGps" style="display:none;" onclick="app.stopGpsTracking()">
-          <i class="fa-solid fa-stop"></i> Sürüşü Bitir & Kaydet
+          <i class="fa-solid fa-stop"></i> Sürüşü Bitir & Haritayla Kaydet
         </button>
       </div>
 
-      <div class="card">
-        <div class="card-title"><i class="fa-solid fa-satellite-dish"></i> Canlı Sürüş Asistanı</div>
-        <div style="font-size:12px; color:var(--text-muted); line-height:1.5;">
-          • Sürüş başladığında GPS koordinatlarınız üzerinden kat edilen mesafe gerçek zamanlı ölçülür.<br>
-          • Çift yakıtlı araçlarda hem LPG hem Benzin tüketiminiz, tek yakıtlı araçlarda aktif ortalamanız baz alınarak yoldaki anlık maliyetiniz hesaplanır.<br>
-          • Sürüş sonunda kaydı hem <b>Rotalar</b> listesine hem de <b>KM Sayaç Günlüğü</b>'ne tek tıkla işleyebilirsiniz.
-        </div>
+      <div style="font-size:11px; color:var(--text-muted); text-align:center;" id="gpsFuelRateSummary">
+        * Aktif tüketim modeliniz yükleniyor...
       </div>
     </section>
 
@@ -252,10 +252,10 @@
     <section id="tab-route" class="tab-content">
       <div style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <h2 style="font-size:16px; font-weight:700;">Seyahat & Rota Maliyeti</h2>
-          <div style="font-size:12px; color:var(--text-muted);">Ağırlıklı tüketim ve gerçek birim fiyat hesabı</div>
+          <h2 style="font-size:16px; font-weight:700;">Seyahat & Rota Kayıtları</h2>
+          <div style="font-size:12px; color:var(--text-muted);">Kaydedilen GPS rotaları ve manuel hesaplar</div>
         </div>
-        <button class="btn-secondary" onclick="app.openModal('modalRoute')"><i class="fa-solid fa-route"></i> Yeni Rota</button>
+        <button class="btn-secondary" onclick="app.openModal('modalRoute')"><i class="fa-solid fa-route"></i> Manuel Rota</button>
       </div>
       <div class="card" id="routeRefBanner">
         <div style="font-size:12px; color:var(--text-muted); display:flex; flex-direction:column; gap:4px;">
@@ -396,7 +396,7 @@
     </section>
   </main>
 
-  <!-- Bottom Navigation (6 SEKME) -->
+  <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <button class="nav-btn active" onclick="app.switchTab('dashboard', this)"><i class="fa-solid fa-gauge"></i><span>Panel</span></button>
     <button class="nav-btn" onclick="app.switchTab('gps', this)"><i class="fa-solid fa-location-arrow"></i><span>Sürüş</span></button>
@@ -407,6 +407,18 @@
   </nav>
 
   <!-- MODALS -->
+
+  <!-- Modal: View Saved GPS Map Route -->
+  <div class="modal-overlay" id="modalRouteMapView">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="viewRouteMapTitle">Harita Kaydı</h3>
+        <button class="btn-close" onclick="app.closeModal('modalRouteMapView')">&times;</button>
+      </div>
+      <div id="savedRouteMap"></div>
+      <div class="card" style="background:#0f172a; margin-bottom:0; padding:12px;" id="viewRouteMapSummary"></div>
+    </div>
+  </div>
 
   <!-- Modal: Finish GPS Trip Save -->
   <div class="modal-overlay" id="modalGpsTripSave">
@@ -419,6 +431,7 @@
         <div class="card" style="background:#0f172a; margin-bottom:12px; padding:12px;">
           <div style="font-size:12px; color:var(--text-muted);">Ölçülen Mesafe: <b id="gpsModalDist" style="color:#fff;">-</b></div>
           <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Seyahat Süresi: <b id="gpsModalDuration" style="color:var(--accent-blue);">-</b></div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Kaydedilen Nokta: <b id="gpsModalPointsCount" style="color:var(--accent-amber);">0 konum</b></div>
           <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Tahmini Sarfiyat: <b id="gpsModalFuelVol" style="color:var(--accent-purple);">-</b></div>
           <div style="font-size:15px; font-weight:700; color:var(--accent-teal); margin-top:6px;">Yakıt Maliyeti: <b id="gpsModalCost">-</b></div>
         </div>
@@ -436,7 +449,7 @@
           <input type="checkbox" id="gpsUpdateOdometer" checked style="width:16px; height:16px; accent-color:var(--accent-teal);">
           <label for="gpsUpdateOdometer" style="font-size:12px; color:#cbd5e1; cursor:pointer;">Bu mesafeyi aracın son KM sayacına ekleyip <b>KM Log</b>'a da kaydet</label>
         </div>
-        <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Seyahati Kaydet</button>
+        <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Harita İziyle Birlikte Kaydet</button>
       </form>
     </div>
   </div>
@@ -451,7 +464,7 @@
       <div style="display:flex; flex-direction:column; gap:16px;">
         <div class="card" style="margin-bottom:0; background:#0f172a;">
           <div style="font-weight:700; font-size:14px; margin-bottom:4px;"><i class="fa-solid fa-download" style="color:var(--accent-teal);"></i> Verileri İndir (Download)</div>
-          <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Tüm araçlarınızı, doluluk yüzdeli yakıt ve bakım kayıtlarınızı JSON dosyası olarak kaydedin.</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Tüm araçlarınızı, haritalı GPS rotalarınızı ve bakım kayıtlarınızı JSON dosyası olarak kaydedin.</div>
           <button class="btn-primary" onclick="app.downloadBackup()"><i class="fa-solid fa-file-arrow-down"></i> Yedeği İndir (.json)</button>
         </div>
 
@@ -696,13 +709,22 @@
         this.data = this.loadData();
         this.activeVehicleId = this.data.activeVehicleId || (this.data.vehicles[0] ? this.data.vehicles[0].id : null);
 
-        // GPS Sürüş Değişkenleri
+        // GPS & Harita Değişkenleri
         this.gpsWatchId = null;
+        this.usingCapGeolocation = false;
         this.gpsTimerId = null;
         this.gpsWakeLock = null;
         this.gpsTotalDistanceKm = 0;
         this.gpsLastPosition = null;
         this.gpsElapsedSeconds = 0;
+        this.gpsRouteCoordinates = [];
+
+        // Leaflet Harita Nesneleri
+        this.liveMap = null;
+        this.livePolyline = null;
+        this.liveMarker = null;
+        this.savedMap = null;
+        this.savedPolyline = null;
 
         this.init();
       }
@@ -752,7 +774,23 @@
             { id: 'k1', vehicleId: 'v1', date: '2026-10-22', km: 146200, note: 'Haftalık kontrol' }
           ],
           routes: [
-            { id: 'r1', vehicleId: 'v1', date: '2026-10-28', from: 'Denizli', to: 'İzmir', km: 235, volumeDetail: '14.1 LT Dizel', cost: 593 }
+            {
+              id: 'r1',
+              vehicleId: 'v1',
+              date: '2026-10-28',
+              from: 'Denizli Merkez',
+              to: 'Pamukkale',
+              km: 18.4,
+              volumeDetail: '1.1 LT Dizel (GPS)',
+              cost: 49.5,
+              path: [
+                [37.7765, 29.0864],
+                [37.7912, 29.0950],
+                [37.8250, 29.1120],
+                [37.8800, 29.1210],
+                [37.9137, 29.1187]
+              ]
+            }
           ],
           maintenances: [
             { id: 'm1', vehicleId: 'v1', type: 'Periyodik Bakım', date: '2026-08-10', km: 140000, service: 'Özel Servis', cost: 3200, nextKm: 155000, notes: 'Yağ ve filtreler' }
@@ -778,6 +816,23 @@
           const el = document.getElementById(id);
           if (el) el.value = today;
         });
+      }
+
+      initLiveMap() {
+        if (this.liveMap) {
+          setTimeout(() => this.liveMap.invalidateSize(), 150);
+          return;
+        }
+        const mapEl = document.getElementById('liveGpsMap');
+        if (!mapEl || typeof L === 'undefined') return;
+
+        // Varsayılan Türkiye / Denizli merkezli başlangıç
+        this.liveMap = L.map('liveGpsMap').setView([37.7765, 29.0864], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap'
+        }).addTo(this.liveMap);
+
+        this.livePolyline = L.polyline([], { color: '#14b8a6', weight: 5 }).addTo(this.liveMap);
       }
 
       renderVehicleSelect() {
@@ -947,7 +1002,7 @@
       }
 
       /* ----------------------------------------------------
-         GPS CANLI SÜRÜŞ MOTORU & KADRAN MANTIĞI
+         GELİŞMİŞ GPS + CAPACITOR NATIVE + CANLI HARİTA MOTORU
       ---------------------------------------------------- */
       updateGpsRateSummary() {
         const veh = this.getActiveVehicle();
@@ -961,7 +1016,7 @@
       }
 
       calculateHaversineDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371; // Dünya yarıçapı (km)
+        const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLon = (lon2 - lon1) * Math.PI / 180;
         const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -976,9 +1031,7 @@
           if ('wakeLock' in navigator) {
             this.gpsWakeLock = await navigator.wakeLock.request('screen');
           }
-        } catch (err) {
-          console.warn('WakeLock alınamadı:', err);
-        }
+        } catch (err) {}
       }
 
       releaseWakeLock() {
@@ -988,29 +1041,35 @@
         }
       }
 
-      startGpsTracking() {
-        if (!navigator.geolocation) {
-          alert('Cihazınızda GPS / Konum desteği bulunamadı!');
-          return;
-        }
+      async startGpsTracking() {
+        this.initLiveMap();
 
         this.gpsTotalDistanceKm = 0;
         this.gpsLastPosition = null;
         this.gpsElapsedSeconds = 0;
+        this.gpsRouteCoordinates = [];
+
+        if (this.livePolyline) this.livePolyline.setLatLngs([]);
+        if (this.liveMarker && this.liveMap) {
+          this.liveMap.removeLayer(this.liveMarker);
+          this.liveMarker = null;
+        }
 
         document.getElementById('gpsSpeedVal').textContent = '0';
-        document.getElementById('gpsDistanceVal').innerHTML = '0.00 <span style="font-size:12px;">km</span>';
+        document.getElementById('gpsDistanceVal').innerHTML = '0.00 <span style="font-size:11px;">km</span>';
         document.getElementById('gpsTimeVal').textContent = '00:00:00';
-        document.getElementById('gpsLiveCostVal').innerHTML = '0.00 <span style="font-size:12px;">₺</span>';
+        document.getElementById('gpsLiveCostVal').innerHTML = '0.00 <span style="font-size:11px;">₺</span>';
         document.getElementById('gpsLiveFuelVolumeText').textContent = 'Harcanan Yakıt: 0.00 LT';
 
         document.getElementById('gpsLiveDot').classList.add('active');
-        document.getElementById('gpsStatusText').textContent = 'GPS Sinyali Bekleniyor...';
+        document.getElementById('gpsStatusText').textContent = 'Konum İzni Kontrol Ediliyor...';
         document.getElementById('btnStartGps').style.display = 'none';
         document.getElementById('btnStopGps').style.display = 'flex';
 
         this.requestWakeLock();
 
+        // Kronometreyi başlat
+        if (this.gpsTimerId) clearInterval(this.gpsTimerId);
         this.gpsTimerId = setInterval(() => {
           this.gpsElapsedSeconds++;
           const hrs = String(Math.floor(this.gpsElapsedSeconds / 3600)).padStart(2, '0');
@@ -1019,30 +1078,74 @@
           document.getElementById('gpsTimeVal').textContent = `${hrs}:${mins}:${secs}`;
         }, 1000);
 
-        const options = {
+        const geoOptions = {
           enableHighAccuracy: true,
-          timeout: 15000,
+          timeout: 20000,
           maximumAge: 0
         };
+
+        // 1. Önce Capacitor Native Geolocation Eklentisi var mı kontrol et (Android APK için en garantili yol)
+        const CapGeo = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Geolocation;
+        if (CapGeo) {
+          try {
+            await CapGeo.requestPermissions();
+            this.usingCapGeolocation = true;
+            document.getElementById('gpsStatusText').textContent = 'Uydulara Bağlanıyor...';
+
+            // İlk konumu hemen çek
+            CapGeo.getCurrentPosition(geoOptions).then(pos => {
+              if (pos) this.handleGpsUpdate(pos);
+            }).catch(() => {});
+
+            this.gpsWatchId = await CapGeo.watchPosition(geoOptions, (pos, err) => {
+              if (err) {
+                document.getElementById('gpsStatusText').textContent = 'GPS Sinyali Bekleniyor...';
+                return;
+              }
+              if (pos) this.handleGpsUpdate(pos);
+            });
+            return;
+          } catch (e) {
+            console.warn('Capacitor Geolocation fallback:', e);
+          }
+        }
+
+        // 2. Standart Web Geolocation Fallback
+        if (!navigator.geolocation) {
+          alert('Cihazınızda GPS / Konum desteği bulunamadı!');
+          this.stopGpsTracking();
+          return;
+        }
+
+        this.usingCapGeolocation = false;
+        navigator.geolocation.getCurrentPosition(
+          (pos) => this.handleGpsUpdate(pos),
+          (err) => {
+            document.getElementById('gpsStatusText').textContent = 'Konum İzni / Açık Alan Gerekli';
+          },
+          geoOptions
+        );
 
         this.gpsWatchId = navigator.geolocation.watchPosition(
           (pos) => this.handleGpsUpdate(pos),
           (err) => {
-            console.warn('GPS Hatası:', err);
-            document.getElementById('gpsStatusText').textContent = 'Konum İzni / Açık Alan Gerekli';
+            document.getElementById('gpsStatusText').textContent = 'GPS Sinyali Aranıyor...';
           },
-          options
+          geoOptions
         );
       }
 
       handleGpsUpdate(pos) {
+        if (!pos || !pos.coords) return;
         const { latitude, longitude, speed, accuracy } = pos.coords;
 
-        document.getElementById('gpsAccuracyText').textContent = `Hassasiyet: ±${Math.round(accuracy)}m`;
+        document.getElementById('gpsAccuracyText').textContent = `Hassasiyet: ±${Math.round(accuracy || 10)}m`;
         document.getElementById('gpsStatusText').textContent = 'GPS Canlı Takipte';
 
-        const currentSpeedKmh = (speed && speed > 0.5) ? Math.round(speed * 3.6) : 0;
-        document.getElementById('gpsSpeedVal').textContent = currentSpeedKmh;
+        let currentSpeedKmh = 0;
+        if (speed !== null && speed !== undefined && speed > 0.3) {
+          currentSpeedKmh = Math.round(speed * 3.6);
+        }
 
         if (this.gpsLastPosition) {
           const deltaKm = this.calculateHaversineDistance(
@@ -1052,22 +1155,33 @@
             longitude
           );
 
-          // GPS sapmalarını filtrelemek için en az 5 metrelik anlamlı hareketi ekle
-          if (deltaKm >= 0.005 && accuracy <= 60) {
+          const timeDiffSec = (Date.now() - this.gpsLastPosition.timestamp) / 1000;
+          if (currentSpeedKmh === 0 && deltaKm > 0.003 && timeDiffSec > 0) {
+            const calcSpd = Math.round((deltaKm / (timeDiffSec / 3600)));
+            if (calcSpd < 220) currentSpeedKmh = calcSpd;
+          }
+
+          // 3 metreden büyük her hareketi kabul et (esnetilmiş filtre)
+          if (deltaKm >= 0.003) {
             this.gpsTotalDistanceKm += deltaKm;
-            this.gpsLastPosition = { latitude, longitude };
+            this.gpsLastPosition = { latitude, longitude, timestamp: Date.now() };
+            this.gpsRouteCoordinates.push([latitude, longitude]);
+            this.updateLiveMapPosition(latitude, longitude);
           }
         } else {
-          this.gpsLastPosition = { latitude, longitude };
+          this.gpsLastPosition = { latitude, longitude, timestamp: Date.now() };
+          this.gpsRouteCoordinates.push([latitude, longitude]);
+          this.updateLiveMapPosition(latitude, longitude);
         }
 
-        document.getElementById('gpsDistanceVal').innerHTML = `${this.gpsTotalDistanceKm.toFixed(2)} <span style="font-size:12px;">km</span>`;
+        document.getElementById('gpsSpeedVal').textContent = currentSpeedKmh;
+        document.getElementById('gpsDistanceVal').innerHTML = `${this.gpsTotalDistanceKm.toFixed(2)} <span style="font-size:11px;">km</span>`;
 
         const veh = this.getActiveVehicle();
         const fuels = this.getVehicleFuels();
         const m = this.getRouteReferenceMetrics(veh, fuels);
         const liveCost = this.gpsTotalDistanceKm * m.costPerKm;
-        document.getElementById('gpsLiveCostVal').innerHTML = `${liveCost.toFixed(2)} <span style="font-size:12px;">₺</span>`;
+        document.getElementById('gpsLiveCostVal').innerHTML = `${liveCost.toFixed(2)} <span style="font-size:11px;">₺</span>`;
 
         if (m.isDual) {
           const lpgUsed = (this.gpsTotalDistanceKm * m.lpgPer100) / 100;
@@ -1080,11 +1194,40 @@
         }
       }
 
-      stopGpsTracking() {
+      updateLiveMapPosition(lat, lng) {
+        if (!this.liveMap || typeof L === 'undefined') return;
+        const latLng = [lat, lng];
+
+        if (this.livePolyline) {
+          this.livePolyline.setLatLngs(this.gpsRouteCoordinates);
+        }
+
+        if (!this.liveMarker) {
+          this.liveMarker = L.circleMarker(latLng, {
+            radius: 7,
+            fillColor: '#38bdf8',
+            color: '#fff',
+            weight: 2,
+            fillOpacity: 1
+          }).addTo(this.liveMap);
+        } else {
+          this.liveMarker.setLatLng(latLng);
+        }
+
+        this.liveMap.setView(latLng, 16);
+      }
+
+      async stopGpsTracking() {
+        const CapGeo = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Geolocation;
         if (this.gpsWatchId !== null) {
-          navigator.geolocation.clearWatch(this.gpsWatchId);
+          if (this.usingCapGeolocation && CapGeo) {
+            try { await CapGeo.clearWatch({ id: this.gpsWatchId }); } catch (e) {}
+          } else if (navigator.geolocation) {
+            navigator.geolocation.clearWatch(this.gpsWatchId);
+          }
           this.gpsWatchId = null;
         }
+
         if (this.gpsTimerId !== null) {
           clearInterval(this.gpsTimerId);
           this.gpsTimerId = null;
@@ -1114,6 +1257,7 @@
 
         document.getElementById('gpsModalDist').textContent = `${this.gpsTotalDistanceKm.toFixed(2)} KM`;
         document.getElementById('gpsModalDuration').textContent = document.getElementById('gpsTimeVal').textContent;
+        document.getElementById('gpsModalPointsCount').textContent = `${this.gpsRouteCoordinates.length} GPS noktası`;
         document.getElementById('gpsModalFuelVol').textContent = volDetail;
         document.getElementById('gpsModalCost').textContent = `${totalTripCost.toFixed(2)} ₺`;
 
@@ -1133,7 +1277,7 @@
         const cost = parseFloat((km * m.costPerKm).toFixed(2));
         const volDetail = document.getElementById('gpsModalFuelVol').textContent + ' (GPS)';
 
-        // 1. Rotalara Ekle
+        // 1. Rotalara Koordinat Dizisiyle (path) birlikte ekle
         this.data.routes.push({
           id: 'r_gps_' + Date.now(),
           vehicleId: this.activeVehicleId,
@@ -1141,8 +1285,10 @@
           from: from,
           to: to,
           km: km,
+          duration: document.getElementById('gpsTimeVal').textContent,
           volumeDetail: volDetail,
-          cost: cost
+          cost: cost,
+          path: [...this.gpsRouteCoordinates]
         });
 
         // 2. İstenirse KM Sayaç Günlüğüne de otomatik ekle
@@ -1168,7 +1314,55 @@
         this.renderAll();
         this.closeModal('modalGpsTripSave');
         e.target.reset();
-        alert('GPS sürüş kaydınız başarıyla kaydedildi!');
+        alert('GPS sürüş kaydınız ve harita rotanız başarıyla kaydedildi! Rota sekmesinden haritayı açıp inceleyebilirsiniz.');
+      }
+
+      openSavedRouteMap(routeId) {
+        const r = this.data.routes.find(x => x.id === routeId);
+        if (!r || !r.path || r.path.length === 0) {
+          alert('Bu kayda ait GPS harita izi bulunmuyor.');
+          return;
+        }
+
+        document.getElementById('viewRouteMapTitle').textContent = `${r.from} ➔ ${r.to}`;
+        document.getElementById('viewRouteMapSummary').innerHTML = `
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+            <span style="color:var(--text-muted);">Tarih: <b style="color:#fff;">${r.date}</b></span>
+            <span style="color:var(--text-muted);">Mesafe: <b style="color:var(--accent-blue);">${r.km} km</b></span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:12px;">
+            <span style="color:var(--text-muted);">Tüketim: <b style="color:#fff;">${r.volumeDetail || '-'}</b></span>
+            <span style="color:var(--text-muted);">Maliyet: <b style="color:var(--accent-teal);">${Number(r.cost).toLocaleString('tr-TR')} ₺</b></span>
+          </div>
+        `;
+
+        this.openModal('modalRouteMapView');
+
+        setTimeout(() => {
+          if (!this.savedMap) {
+            this.savedMap = L.map('savedRouteMap').setView(r.path[0], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '© OpenStreetMap'
+            }).addTo(this.savedMap);
+          } else {
+            this.savedMap.invalidateSize();
+            this.savedMap.eachLayer((layer) => {
+              if (layer instanceof L.Polyline || layer instanceof L.CircleMarker) {
+                this.savedMap.removeLayer(layer);
+              }
+            });
+          }
+
+          const poly = L.polyline(r.path, { color: '#14b8a6', weight: 5 }).addTo(this.savedMap);
+          // Başlangıç Noktası (Yeşil)
+          L.circleMarker(r.path[0], { radius: 7, fillColor: '#22c55e', color: '#fff', weight: 2, fillOpacity: 1 })
+            .bindPopup(`Başlangıç: ${r.from}`).addTo(this.savedMap);
+          // Bitiş Noktası (Kırmızı)
+          L.circleMarker(r.path[r.path.length - 1], { radius: 7, fillColor: '#ef4444', color: '#fff', weight: 2, fillOpacity: 1 })
+            .bindPopup(`Varış: ${r.to}`).addTo(this.savedMap);
+
+          this.savedMap.fitBounds(poly.getBounds(), { padding: [25, 25] });
+        }, 200);
       }
 
       /* ----------------------------------------------------
@@ -1228,7 +1422,6 @@
           }
         }
 
-        // Dual Fuel Bar
         const dualCard = document.getElementById('dualFuelCard');
         if (veh.yakitTuru === 'Benzin + LPG') {
           dualCard.style.display = 'block';
@@ -1253,7 +1446,6 @@
           dualCard.style.display = 'none';
         }
 
-        // Fuel History List
         const feed = document.getElementById('fuelHistoryList');
         document.getElementById('fuelCountLabel').textContent = `${fuels.length} dolum`;
         feed.innerHTML = '';
@@ -1360,6 +1552,11 @@
 
         const revRoutes = [...routes].reverse();
         revRoutes.forEach(r => {
+          const hasMapPath = r.path && Array.isArray(r.path) && r.path.length > 0;
+          const mapBtnHtml = hasMapPath
+            ? `<button class="btn-map-outline" onclick="app.openSavedRouteMap('${r.id}')"><i class="fa-solid fa-map-location-dot"></i> Harita</button>`
+            : '';
+
           const el = document.createElement('div');
           el.className = 'list-item';
           el.innerHTML = `
@@ -1374,7 +1571,10 @@
             </div>
             <div style="text-align:right;">
               <div style="font-weight:800; font-size:15px; color:var(--accent-teal);">${Number(r.cost).toLocaleString('tr-TR')} ₺</div>
-              <button class="btn-danger-outline" style="margin-top:6px;" onclick="app.deleteRoute('${r.id}')"><i class="fa-solid fa-trash"></i></button>
+              <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:6px;">
+                ${mapBtnHtml}
+                <button class="btn-danger-outline" onclick="app.deleteRoute('${r.id}')"><i class="fa-solid fa-trash"></i></button>
+              </div>
             </div>
           `;
           list.appendChild(el);
@@ -1554,7 +1754,6 @@
         const isEv = veh.yakitTuru === 'Elektrik';
         const unit = isEv ? 'kWh' : 'LT';
 
-        // 1. PROFESYONEL YAKIT FİYAT ANALİZİ
         const fuelTypesMap = {};
         fuels.forEach(f => {
           const type = f.subType || veh.yakitTuru;
@@ -1661,7 +1860,6 @@
           });
         }
 
-        // 2. SERVİS VE BAKIM ÖZETİ HESAPLAMA
         const totalMaintSpend = maints.reduce((sum, m) => sum + (Number(m.cost) || 0), 0);
         const avgMaintSpend = maints.length > 0 ? (totalMaintSpend / maints.length) : 0;
         const totalFuelSpend = fuels.reduce((sum, f) => sum + (Number(f.cost) || 0), 0);
@@ -1671,7 +1869,6 @@
         document.getElementById('repAvgMaintSpend').textContent = maints.length > 0 ? `${Math.round(avgMaintSpend).toLocaleString('tr-TR')} ₺/servis` : '-';
         document.getElementById('repTotalCarExpense').textContent = `${Math.round(grandTotalCarExpense).toLocaleString('tr-TR')} ₺`;
 
-        // 3. GENEL METRİKLER VE PROJEKSİYON
         if (fuels.length < 2) {
           ['repRealCostPerKm','repDailyConsumption','repDailyKm','repDailyCost','repRefuelDistance','repOneYearKm','repRefuelRoutine','repNextRefuelDate','repFullTankRange']
             .forEach(id => {
@@ -1727,7 +1924,6 @@
           document.getElementById('repFullTankRange').textContent = `~ ${Math.round(fullTankRange)} km (${totalCapacity} ${unit} ile)`;
         }
 
-        // 4. EN ALTA TAŞINAN PERİYOT LİSTESİ
         const intervalContainer = document.getElementById('repIntervalPeriodList');
         intervalContainer.innerHTML = '';
 
@@ -1775,7 +1971,6 @@
         }
       }
 
-      // BACKUP & RESTORE
       downloadBackup() {
         const jsonStr = JSON.stringify(this.data, null, 2);
         const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -1818,7 +2013,6 @@
         reader.readAsText(file);
       }
 
-      // VEHICLE CRUD
       openAddVehicleModal() {
         document.getElementById('modalVehicleTitle').textContent = 'Yeni Araç Ekle';
         document.getElementById('vEditId').value = '';
@@ -1912,7 +2106,6 @@
         this.closeModal('modalVehicle');
       }
 
-      // FUEL ADD & EDIT OPERASYONLARI
       openAddFuelModal() {
         const veh = this.getActiveVehicle();
         document.getElementById('modalFuelTitle').textContent = 'Yakıt / Şarj Alımı Ekle';
@@ -2052,6 +2245,9 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('tab-' + tabKey).classList.add('active');
         btn.classList.add('active');
+        if (tabKey === 'gps') {
+          this.initLiveMap();
+        }
       }
 
       switchGarageSubTab(subKey, btn) {
