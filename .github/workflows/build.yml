@@ -24,11 +24,13 @@ jobs:
         with:
           node-version: 20
 
-      - name: Build Web & Sync Android
+      - name: Build Web & Sync Android with GPS Permissions
         run: |
           npm install
           rm -rf android
           npx @capacitor/cli add android
+          # AndroidManifest.xml içine GPS ve Konum izinlerini otomatik enjekte et
+          sed -i 's/<manifest xmlns:android="http:\/\/schemas.android.com\/apk\/res\/android">/<manifest xmlns:android="http:\/\/schemas.android.com\/apk\/res\/android">\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" \/>\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" \/>\n    <uses-feature android:name="android.hardware.location.gps" android:required="false" \/>/g' android/app/src/main/AndroidManifest.xml
           npx @capacitor/cli sync android
 
       - name: Build APK with Gradle
