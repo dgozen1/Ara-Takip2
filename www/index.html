@@ -454,7 +454,7 @@
     </div>
   </div>
 
-  <!-- Modal: Backup, Restore, Excel (.CSV) & JSON -->
+  <!-- Modal: Backup, Restore & EXCEL EXPORT -->
   <div class="modal-overlay" id="modalBackup">
     <div class="modal-box">
       <div class="modal-header">
@@ -465,15 +465,15 @@
         <!-- Excel CSV Aktar -->
         <div class="card" style="margin-bottom:0; background:#0f172a; border-color:#16a34a;">
           <div style="font-weight:700; font-size:13px; margin-bottom:4px;"><i class="fa-solid fa-file-excel" style="color:#22c55e;"></i> Excel Tablosu Olarak Aktar (.csv)</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Tüm yakıt, bakım ve rota kayıtlarını Türkçe Excel formatında indirin veya paylaşın.</div>
-          <button class="btn-excel" onclick="app.exportExcelCsv()"><i class="fa-solid fa-table"></i> Excel (.csv) Dosyasını Paylaş / İndir</button>
+          <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Tüm yakıt, bakım ve rota kayıtlarını Excel formatında kopyalayın veya paylaşın.</div>
+          <button class="btn-excel" onclick="app.exportExcelCsv()"><i class="fa-solid fa-table"></i> Excel (.csv) Verisini Kopyala / Paylaş</button>
         </div>
 
         <!-- JSON Dosya Paylaş / İndir -->
         <div class="card" style="margin-bottom:0; background:#0f172a;">
           <div style="font-weight:700; font-size:13px; margin-bottom:4px;"><i class="fa-solid fa-share-nodes" style="color:var(--accent-teal);"></i> Tam Sistem Yedeği (.json)</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Uygulama verilerini başka telefona taşımak için yedek dosyası oluşturun.</div>
-          <button class="btn-primary" onclick="app.exportBackupFile()"><i class="fa-solid fa-file-export"></i> JSON Yedeğini Paylaş / İndir</button>
+          <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Uygulama verilerini başka telefona taşımak için yedek oluşturun.</div>
+          <button class="btn-primary" onclick="app.exportBackupFile()"><i class="fa-solid fa-file-export"></i> JSON Yedeğini Kopyala / Paylaş</button>
         </div>
 
         <!-- Kopyala / Yapıştır -->
@@ -1363,7 +1363,7 @@
       }
 
       /* ----------------------------------------------------
-         EXCEL (.CSV) & JSON AKTARIM MOTORU
+         EXCEL & YEDEKLEME (PANOYA KOPYALAMA ÇÖZÜMÜ)
       ---------------------------------------------------- */
       openBackupModal() {
         const jsonStr = JSON.stringify(this.data);
@@ -1383,7 +1383,7 @@
         return `"${clean}"`;
       }
 
-      async exportExcelCsv() {
+      exportExcelCsv() {
         const headers = [
           'Kayıt Tipi',
           'Plaka',
@@ -1477,90 +1477,34 @@
         });
 
         const csvContent = '\uFEFF' + rows.join('\r\n');
-        const dateStr = new Date().toISOString().split('T')[0];
-        const fileName = `OtoTakip_Excel_Rapor_${dateStr}.csv`;
-
-        try {
-          if (navigator.canShare && window.File) {
-            const file = new File([csvContent], fileName, { type: 'text/csv;charset=utf-8' });
-            if (navigator.canShare({ files: [file] })) {
-              await navigator.share({
-                title: 'OtoTakip Pro Excel Raporu',
-                text: 'Araç, yakıt ve bakım kayıtları Excel tablosu (.csv)',
-                files: [file]
-              });
-              return;
-            }
-          }
-        } catch (err) {}
-
-        try {
-          const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
-          const a = document.createElement('a');
-          a.setAttribute('href', dataUri);
-          a.setAttribute('download', fileName);
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        } catch (e) {
-          alert('CSV dosyası oluşturulamadı.');
-        }
+        this.copyTextToClipboard(csvContent, 'Excel (.csv) verileri panoya kopyalandı! Excel, Google E-Tablolar veya WhatsApp içine yapıştırabilirsiniz.');
       }
 
-      async exportBackupFile() {
-        const jsonStr = JSON.stringify(this.data, null, 2);
-        const dateStr = new Date().toISOString().split('T')[0];
-        const fileName = `OtoTakip_Yedek_${dateStr}.json`;
+      exportBackupFile() {
+        this.copyBackupText();
+      }
 
-        try {
-          if (navigator.canShare && window.File) {
-            const file = new File([jsonStr], fileName, { type: 'application/json' });
-            if (navigator.canShare({ files: [file] })) {
-              await navigator.share({
-                title: 'OtoTakip Pro Yedek Dosyası',
-                text: 'Araç ve yakıt takip yedeği',
-                files: [file]
-              });
-              return;
-            }
-          }
-          if (navigator.share) {
-            await navigator.share({ title: fileName, text: jsonStr });
-            return;
-          }
-        } catch (err) {}
-
-        try {
-          const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
-          const a = document.createElement('a');
-          a.setAttribute('href', dataUri);
-          a.setAttribute('download', fileName);
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        } catch (e) {
-          this.copyBackupText();
+      copyTextToClipboard(text, successMsg) {
+        const txtArea = document.getElementById('backupJsonTextarea');
+        if (txtArea) {
+          txtArea.value = text;
+          txtArea.select();
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => {
+            alert(successMsg || 'Veriler panoya kopyalandı!');
+          }).catch(() => {
+            document.execCommand('copy');
+            alert(successMsg || 'Veriler kopyalandı!');
+          });
+        } else {
+          document.execCommand('copy');
+          alert(successMsg || 'Veriler kopyalandı!');
         }
       }
 
       copyBackupText() {
-        const jsonStr = JSON.stringify(this.data);
-        const txtArea = document.getElementById('backupJsonTextarea');
-        if (txtArea) {
-          txtArea.value = jsonStr;
-          txtArea.select();
-        }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(jsonStr).then(() => {
-            alert('Yedek kodu panoya kopyalandı!');
-          }).catch(() => {
-            document.execCommand('copy');
-            alert('Yedek kodu kopyalandı!');
-          });
-        } else {
-          document.execCommand('copy');
-          alert('Yedek kodu panoya kopyalandı!');
-        }
+        this.copyTextToClipboard(JSON.stringify(this.data), 'Yedek kodu panoya kopyalandı! WhatsApp veya Notlar uygulamanıza yapıştırabilirsiniz.');
       }
 
       restoreFromTextarea() {
