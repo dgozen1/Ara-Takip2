@@ -124,7 +124,7 @@
       <select id="vehicleSelect" class="vehicle-dropdown" onchange="app.selectVehicle(this.value)"></select>
     </div>
     <div class="header-actions">
-      <button class="btn-icon-header" onclick="app.openModal('modalBackup')" title="Veri Yedekle / Geri Yükle"><i class="fa-solid fa-cloud-arrow-up"></i></button>
+      <button class="btn-icon-header" onclick="app.openBackupModal()" title="Veri Yedekle / Geri Yükle"><i class="fa-solid fa-cloud-arrow-up"></i></button>
       <button class="btn-icon-header" onclick="app.openEditVehicleModal()" title="Seçili Aracı Düzenle"><i class="fa-solid fa-pen"></i></button>
       <button class="btn-icon-header" onclick="app.openAddVehicleModal()" title="Yeni Araç Ekle"><i class="fa-solid fa-plus"></i></button>
     </div>
@@ -217,7 +217,6 @@
         </div>
       </div>
 
-      <!-- Canlı Harita Alanı -->
       <div id="liveGpsMap"></div>
 
       <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
@@ -454,26 +453,38 @@
     </div>
   </div>
 
-  <!-- Modal: Backup & Restore -->
+  <!-- Modal: Backup & Restore (ANDROID APK UYUMLU PAYLAŞIM + KOPYALA/YAPIŞTIR DESTEKLİ) -->
   <div class="modal-overlay" id="modalBackup">
     <div class="modal-box">
       <div class="modal-header">
         <h3>Veri Yedekleme & Geri Yükleme</h3>
         <button class="btn-close" onclick="app.closeModal('modalBackup')">&times;</button>
       </div>
-      <div style="display:flex; flex-direction:column; gap:16px;">
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <!-- Yöntem 1: Dosya Paylaş / İndir -->
         <div class="card" style="margin-bottom:0; background:#0f172a;">
-          <div style="font-weight:700; font-size:14px; margin-bottom:4px;"><i class="fa-solid fa-download" style="color:var(--accent-teal);"></i> Verileri İndir (Download)</div>
-          <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Tüm araçlarınızı, haritalı GPS rotalarınızı ve bakım kayıtlarınızı JSON dosyası olarak kaydedin.</div>
-          <button class="btn-primary" onclick="app.downloadBackup()"><i class="fa-solid fa-file-arrow-down"></i> Yedeği İndir (.json)</button>
+          <div style="font-weight:700; font-size:13px; margin-bottom:4px;"><i class="fa-solid fa-share-nodes" style="color:var(--accent-teal);"></i> 1. Yöntem: Dosya Olarak Kaydet / Paylaş</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Android telefonunuzda dosyayı İndirilenler'e kaydetmek, WhatsApp veya Drive'a göndermek için tıklayın.</div>
+          <button class="btn-primary" onclick="app.exportBackupFile()"><i class="fa-solid fa-file-export"></i> Yedek Dosyasını Paylaş / İndir (.json)</button>
         </div>
 
+        <!-- Yöntem 2: Kopyala / Yapıştır (APK İçinde %100 Garantili) -->
         <div class="card" style="margin-bottom:0; background:#0f172a;">
-          <div style="font-weight:700; font-size:14px; margin-bottom:4px;"><i class="fa-solid fa-upload" style="color:var(--accent-blue);"></i> Verileri Geri Yükle (Upload)</div>
-          <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Yeni telefonda yedek dosyanızı seçerek tüm verileri içeri aktarın.</div>
-          <input type="file" id="backupFileInput" accept=".json" style="display:none;" onchange="app.handleRestoreFile(event)">
-          <button class="btn-secondary" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="document.getElementById('backupFileInput').click()">
-            <i class="fa-solid fa-file-import"></i> Yedek Dosyası Seç ve Yükle
+          <div style="font-weight:700; font-size:13px; margin-bottom:4px;"><i class="fa-solid fa-copy" style="color:var(--accent-amber);"></i> 2. Yöntem: Yedek Kodunu Kopyala / Yapıştır</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Dosya indirmeden tek tuşla verinizi kopyalayın veya başka telefondan kopyaladığınız kodu buraya yapıştırıp yükleyin:</div>
+          <textarea id="backupJsonTextarea" class="form-control" rows="3" style="font-size:10px; font-family:monospace; margin-bottom:8px;" placeholder="Yedek JSON metni..."></textarea>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="btn-secondary" style="flex:1;" onclick="app.copyBackupText()"><i class="fa-solid fa-copy"></i> Kodu Kopyala</button>
+            <button type="button" class="btn-primary" style="flex:1; padding:10px;" onclick="app.restoreFromTextarea()"><i class="fa-solid fa-check"></i> Koddan Yükle</button>
+          </div>
+        </div>
+
+        <!-- Yöntem 3: Dosya Seçerek Yükle -->
+        <div class="card" style="margin-bottom:0; background:#0f172a;">
+          <div style="font-weight:700; font-size:13px; margin-bottom:4px;"><i class="fa-solid fa-upload" style="color:var(--accent-blue);"></i> Dosyadan Geri Yükle (.json)</div>
+          <input type="file" id="backupFileInput" accept=".json,application/json,text/plain" style="display:none;" onchange="app.handleRestoreFile(event)">
+          <button class="btn-secondary" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; margin-top:6px;" onclick="document.getElementById('backupFileInput').click()">
+            <i class="fa-solid fa-file-import"></i> Telefondan .json Dosyası Seç
           </button>
         </div>
       </div>
@@ -489,13 +500,19 @@
       </div>
       <form onsubmit="app.handleVehicleFormSubmit(event)">
         <input type="hidden" id="vEditId">
-        <div class="form-group">
-          <label class="form-label">Plaka</label>
-          <input type="text" class="form-control" id="vPlaka" placeholder="Örn: 20 ABC 123" required style="text-transform:uppercase;">
+        <div style="display:flex; gap:10px;">
+          <div class="form-group" style="flex:2;">
+            <label class="form-label">Plaka</label>
+            <input type="text" class="form-control" id="vPlaka" placeholder="Örn: 35 COA 503" required style="text-transform:uppercase;">
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">Model Yılı</label>
+            <input type="number" class="form-control" id="vYear" placeholder="2022">
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">Marka ve Model</label>
-          <input type="text" class="form-control" id="vModel" placeholder="Örn: Renault Megane 1.5 dCi" required>
+          <input type="text" class="form-control" id="vModel" placeholder="Örn: Honda Civic 1.5 Eco Elegance" required>
         </div>
         <div class="form-group">
           <label class="form-label">Yakıt / Enerji Türü</label>
@@ -509,11 +526,11 @@
         </div>
         <div class="form-group" id="groupMainCapacity">
           <label class="form-label" id="lblMainCapacity">Depo Kapasitesi (Litre)</label>
-          <input type="number" step="0.1" class="form-control" id="vCapMain" placeholder="Örn: 50" required>
+          <input type="number" step="0.1" class="form-control" id="vCapMain" placeholder="Örn: 47" required>
         </div>
         <div class="form-group" id="groupLpgCapacity" style="display:none;">
           <label class="form-label">LPG Tank Kapasitesi (Litre)</label>
-          <input type="number" step="0.1" class="form-control" id="vCapLpg" placeholder="Örn: 42">
+          <input type="number" step="0.1" class="form-control" id="vCapLpg" placeholder="Örn: 33">
         </div>
         
         <div style="display:flex; flex-direction:column; gap:8px; margin-top:14px;">
@@ -544,22 +561,30 @@
             </label>
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Tarih</label>
-          <input type="date" class="form-control" id="fDate" required>
+        <div style="display:flex; gap:10px;">
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">Tarih</label>
+            <input type="date" class="form-control" id="fDate" required>
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">Alım Yeri / İstasyon</label>
+            <input type="text" class="form-control" id="fStation" placeholder="Örn: Lunapark Opet">
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">Güncel Kilometre (KM)</label>
-          <input type="number" class="form-control" id="fKm" placeholder="Örn: 145800" required>
+          <input type="number" class="form-control" id="fKm" placeholder="Örn: 51826" required>
           <div class="form-hint" id="fKmHint"></div>
         </div>
-        <div class="form-group">
-          <label class="form-label" id="lblFuelVolume">Alınan Miktar (Litre)</label>
-          <input type="number" step="0.01" class="form-control" id="fVolume" placeholder="Örn: 45.2" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Toplam Ödenen Tutar (TL)</label>
-          <input type="number" step="0.01" class="form-control" id="fCost" placeholder="Örn: 2050" required>
+        <div style="display:flex; gap:10px;">
+          <div class="form-group" style="flex:1;">
+            <label class="form-label" id="lblFuelVolume">Alınan Miktar (LT)</label>
+            <input type="number" step="0.01" class="form-control" id="fVolume" placeholder="Örn: 19.66" required>
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">Toplam Tutar (TL)</label>
+            <input type="number" step="0.01" class="form-control" id="fCost" placeholder="Örn: 1500" required>
+          </div>
         </div>
 
         <div class="form-group">
@@ -592,7 +617,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Sayaç Kilometresi (KM)</label>
-          <input type="number" class="form-control" id="kKm" placeholder="Örn: 146200" required>
+          <input type="number" class="form-control" id="kKm" placeholder="Örn: 52000" required>
         </div>
         <div class="form-group">
           <label class="form-label">Açıklama / Not</label>
@@ -676,7 +701,7 @@
           </div>
           <div class="form-group" style="flex:1;">
             <label class="form-label">İşlem Kilometresi</label>
-            <input type="number" class="form-control" id="mKm" placeholder="Örn: 150000" required>
+            <input type="number" class="form-control" id="mKm" placeholder="Örn: 52000" required>
           </div>
         </div>
         <div style="display:flex; gap:10px;">
@@ -691,11 +716,11 @@
         </div>
         <div class="form-group">
           <label class="form-label">Sonraki Bakım KM (Hedef)</label>
-          <input type="number" class="form-control" id="mNextKm" placeholder="Örn: 165000">
+          <input type="number" class="form-control" id="mNextKm" placeholder="Örn: 62000">
         </div>
         <div class="form-group">
           <label class="form-label">Yapılan İşlemler / Parça Notları</label>
-          <textarea class="form-control" id="mNotes" rows="2" placeholder="5W-30 Motor yağı, filtreler değişti..."></textarea>
+          <textarea class="form-control" id="mNotes" rows="2" placeholder="Motor yağı, filtreler değişti..."></textarea>
         </div>
         <button type="submit" class="btn-primary"><i class="fa-solid fa-wrench"></i> Servis Kaydını Kaydet</button>
       </form>
@@ -705,11 +730,10 @@
   <script>
     class OtoTakipEngine {
       constructor() {
-        this.STORAGE_KEY = 'ototakip_pro_data_v1';
+        this.STORAGE_KEY = 'ototakip_pro_data_v2';
         this.data = this.loadData();
         this.activeVehicleId = this.data.activeVehicleId || (this.data.vehicles[0] ? this.data.vehicles[0].id : null);
 
-        // GPS & Harita Değişkenleri
         this.gpsWatchId = null;
         this.usingCapGeolocation = false;
         this.gpsTimerId = null;
@@ -719,7 +743,6 @@
         this.gpsElapsedSeconds = 0;
         this.gpsRouteCoordinates = [];
 
-        // Leaflet Harita Nesneleri
         this.liveMap = null;
         this.livePolyline = null;
         this.liveMarker = null;
@@ -734,68 +757,56 @@
         if (raw) {
           try { return JSON.parse(raw); } catch (e) { console.error(e); }
         }
+        // KULLANICININ PAYLAŞTIĞI KALICI ARAÇ VE YAKIT VERİLERİ
         return {
           vehicles: [
             {
-              id: 'v1',
-              plaka: '20 ABC 123',
-              markaModel: 'Renault Megane 1.5 dCi',
-              yakitTuru: 'Dizel',
-              depoKapasitesi: 49,
-              lpgKapasitesi: 0,
-              docs: {
-                sigorta: { sirket: 'Anadolu Sigorta', bitis: '2027-04-15', tutar: 4200 },
-                kasko: { sirket: 'Axa Sigorta', bitis: '2027-06-20', tutar: 11500 },
-                muayene: { bitis: '2027-08-10', istasyon: 'TÜVTÜRK Denizli' },
-                ruhsat: { sasiNo: 'VF1KZ140...', motorNo: 'K9K836...', seriNo: 'AB123456' }
-              }
-            },
-            {
-              id: 'v2',
-              plaka: '34 XYZ 789',
-              markaModel: 'Honda Civic 1.6 Eco',
+              id: 'v_civic',
+              plaka: '35 COA 503',
+              markaModel: 'Honda Civic 1.5 Eco Elegance 129 HP',
+              yil: 2022,
               yakitTuru: 'Benzin + LPG',
               depoKapasitesi: 47,
               lpgKapasitesi: 33,
               docs: {
-                sigorta: { sirket: 'Allianz', bitis: '2027-03-01', tutar: 4600 },
-                kasko: { sirket: 'Sompo', bitis: '2027-05-15', tutar: 12800 },
-                muayene: { bitis: '2027-11-20', istasyon: 'TÜVTÜRK Merkez' },
-                ruhsat: { sasiNo: 'NLAFC167...', motorNo: 'R16B2...', seriNo: 'CD789101' }
+                sigorta: { sirket: 'Türkiye Sigorta', bitis: '2027-11-04', tutar: 10696.99 },
+                kasko: { sirket: 'Quick Sigorta', bitis: '2027-11-04', tutar: 19036.05 },
+                muayene: { bitis: '2026-04-02', istasyon: 'TÜVTÜRK' },
+                ruhsat: { sasiNo: 'MRHFE1640NP072732', motorNo: 'L15BG2779043', seriNo: 'IP211103' }
+              }
+            },
+            {
+              id: 'v_apec',
+              plaka: '09 AUV 398',
+              markaModel: 'APEC PS4',
+              yil: 2026,
+              yakitTuru: 'Benzin',
+              depoKapasitesi: 5.5,
+              lpgKapasitesi: 0,
+              docs: {
+                sigorta: { sirket: '', bitis: '', tutar: 0 },
+                kasko: { sirket: '', bitis: '', tutar: 0 },
+                muayene: { bitis: '2029-07-30', istasyon: 'TÜVTÜRK' },
+                ruhsat: { sasiNo: 'NPPSPAB42T1096956', motorNo: 'A1BGAS412600084', seriNo: '' }
               }
             }
           ],
           fuels: [
-            { id: 'f1', vehicleId: 'v1', subType: 'Dizel', date: '2026-10-01', km: 145000, volume: 46.5, cost: 2046, tankPercent: 100 },
-            { id: 'f2', vehicleId: 'v1', subType: 'Dizel', date: '2026-10-15', km: 145800, volume: 44.8, cost: 1993, tankPercent: 100 },
-            { id: 'f3', vehicleId: 'v1', subType: 'Dizel', date: '2026-11-01', km: 146620, volume: 45.0, cost: 2070, tankPercent: 95 }
+            // 1. Araç: Honda Civic
+            { id: 'f_c1', vehicleId: 'v_civic', subType: 'Benzin', date: '2026-11-04', station: 'İzmir Otoban Shell', km: 51583, volume: 18.36, cost: 1500.00, tankPercent: 60 },
+            { id: 'f_c2', vehicleId: 'v_civic', subType: 'LPG', date: '2026-11-04', station: 'İzmir Otoban Shell', km: 51583, volume: 24.95, cost: 1285.17, tankPercent: 100 },
+            { id: 'f_c3', vehicleId: 'v_civic', subType: 'Benzin', date: '2026-11-07', station: 'Denizli Lunapark Opet', km: 51826, volume: 19.66, cost: 1500.00, tankPercent: 60 },
+            
+            // 2. Araç: APEC PS4
+            { id: 'f_a1', vehicleId: 'v_apec', subType: 'Benzin', date: '2026-09-09', station: 'Denizli Lunapark Opet', km: 2, volume: 5.00, cost: 393.30, tankPercent: 100 },
+            { id: 'f_a2', vehicleId: 'v_apec', subType: 'Benzin', date: '2026-09-20', station: 'Denizli Cinkya Opet', km: 100, volume: 2.50, cost: 200.88, tankPercent: 100 },
+            { id: 'f_a3', vehicleId: 'v_apec', subType: 'Benzin', date: '2026-10-12', station: 'Denizli Lunapark Opet', km: 199, volume: 2.69, cost: 230.00, tankPercent: 100 },
+            { id: 'f_a4', vehicleId: 'v_apec', subType: 'Benzin', date: '2026-10-31', station: 'Denizli Lunapark Opet', km: 323, volume: 3.20, cost: 249.86, tankPercent: 100 }
           ],
-          kmLogs: [
-            { id: 'k1', vehicleId: 'v1', date: '2026-10-22', km: 146200, note: 'Haftalık kontrol' }
-          ],
-          routes: [
-            {
-              id: 'r1',
-              vehicleId: 'v1',
-              date: '2026-10-28',
-              from: 'Denizli Merkez',
-              to: 'Pamukkale',
-              km: 18.4,
-              volumeDetail: '1.1 LT Dizel (GPS)',
-              cost: 49.5,
-              path: [
-                [37.7765, 29.0864],
-                [37.7912, 29.0950],
-                [37.8250, 29.1120],
-                [37.8800, 29.1210],
-                [37.9137, 29.1187]
-              ]
-            }
-          ],
-          maintenances: [
-            { id: 'm1', vehicleId: 'v1', type: 'Periyodik Bakım', date: '2026-08-10', km: 140000, service: 'Özel Servis', cost: 3200, nextKm: 155000, notes: 'Yağ ve filtreler' }
-          ],
-          activeVehicleId: 'v1'
+          kmLogs: [],
+          routes: [],
+          maintenances: [],
+          activeVehicleId: 'v_civic'
         };
       }
 
@@ -826,7 +837,6 @@
         const mapEl = document.getElementById('liveGpsMap');
         if (!mapEl || typeof L === 'undefined') return;
 
-        // Varsayılan Türkiye / Denizli merkezli başlangıç
         this.liveMap = L.map('liveGpsMap').setView([37.7765, 29.0864], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap'
@@ -847,7 +857,8 @@
         this.data.vehicles.forEach(v => {
           const opt = document.createElement('option');
           opt.value = v.id;
-          opt.textContent = `${v.plaka} - ${v.markaModel}`;
+          const yilStr = v.yil ? ` (${v.yil})` : '';
+          opt.textContent = `${v.plaka} - ${v.markaModel}${yilStr}`;
           if (v.id === this.activeVehicleId) opt.selected = true;
           select.appendChild(opt);
         });
@@ -873,6 +884,8 @@
         const iconBadge = document.getElementById('vehicleIconBadge');
         if (veh.yakitTuru === 'Elektrik') {
           iconBadge.innerHTML = '<i class="fa-solid fa-bolt" style="color:#22c55e;"></i>';
+        } else if (veh.markaModel && veh.markaModel.toUpperCase().includes('APEC')) {
+          iconBadge.innerHTML = '<i class="fa-solid fa-motorcycle"></i>';
         } else {
           iconBadge.innerHTML = '<i class="fa-solid fa-car-side"></i>';
         }
@@ -958,10 +971,10 @@
 
         if (veh.yakitTuru === 'Benzin + LPG') {
           const lpgPer100 = (stats['LPG'] && stats['LPG'].per100 > 0) ? stats['LPG'].per100 : 8.5;
-          const bznPer100 = (stats['Benzin'] && stats['Benzin'].per100 > 0) ? stats['Benzin'].per100 : 1.5;
+          const bznPer100 = (stats['Benzin'] && stats['Benzin'].per100 > 0) ? stats['Benzin'].per100 : 8.09;
           
-          const lpgPrice = (stats['LPG'] && stats['LPG'].lastUnitPrice > 0) ? stats['LPG'].lastUnitPrice : 51.5;
-          const bznPrice = (stats['Benzin'] && stats['Benzin'].lastUnitPrice > 0) ? stats['Benzin'].lastUnitPrice : 76.5;
+          const lpgPrice = (stats['LPG'] && stats['LPG'].lastUnitPrice > 0) ? stats['LPG'].lastUnitPrice : 51.51;
+          const bznPrice = (stats['Benzin'] && stats['Benzin'].lastUnitPrice > 0) ? stats['Benzin'].lastUnitPrice : 76.30;
 
           const cost100 = (lpgPer100 * lpgPrice) + (bznPer100 * bznPrice);
           const totalVol100 = lpgPer100 + bznPer100;
@@ -981,8 +994,8 @@
             displayPrice: `${weightedUnitPrice.toFixed(2)} ₺/LT (Karma Ağırlıklı)`
           };
         } else {
-          let singlePer100 = 6.0;
-          let singlePrice = 45.0;
+          let singlePer100 = 2.6;
+          let singlePrice = 78.08;
 
           const type = veh.yakitTuru;
           if (stats[type] && stats[type].per100 > 0) singlePer100 = stats[type].per100;
@@ -995,7 +1008,7 @@
             singlePer100,
             singlePrice,
             costPerKm,
-            displayConsumption: `${singlePer100.toFixed(1)} ${unit}/100 km`,
+            displayConsumption: `${singlePer100.toFixed(2)} ${unit}/100 km`,
             displayPrice: `${singlePrice.toFixed(2)} ₺/${unit}`
           };
         }
@@ -1068,7 +1081,6 @@
 
         this.requestWakeLock();
 
-        // Kronometreyi başlat
         if (this.gpsTimerId) clearInterval(this.gpsTimerId);
         this.gpsTimerId = setInterval(() => {
           this.gpsElapsedSeconds++;
@@ -1084,7 +1096,6 @@
           maximumAge: 0
         };
 
-        // 1. Önce Capacitor Native Geolocation Eklentisi var mı kontrol et (Android APK için en garantili yol)
         const CapGeo = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Geolocation;
         if (CapGeo) {
           try {
@@ -1092,7 +1103,6 @@
             this.usingCapGeolocation = true;
             document.getElementById('gpsStatusText').textContent = 'Uydulara Bağlanıyor...';
 
-            // İlk konumu hemen çek
             CapGeo.getCurrentPosition(geoOptions).then(pos => {
               if (pos) this.handleGpsUpdate(pos);
             }).catch(() => {});
@@ -1110,7 +1120,6 @@
           }
         }
 
-        // 2. Standart Web Geolocation Fallback
         if (!navigator.geolocation) {
           alert('Cihazınızda GPS / Konum desteği bulunamadı!');
           this.stopGpsTracking();
@@ -1120,7 +1129,7 @@
         this.usingCapGeolocation = false;
         navigator.geolocation.getCurrentPosition(
           (pos) => this.handleGpsUpdate(pos),
-          (err) => {
+          () => {
             document.getElementById('gpsStatusText').textContent = 'Konum İzni / Açık Alan Gerekli';
           },
           geoOptions
@@ -1128,7 +1137,7 @@
 
         this.gpsWatchId = navigator.geolocation.watchPosition(
           (pos) => this.handleGpsUpdate(pos),
-          (err) => {
+          () => {
             document.getElementById('gpsStatusText').textContent = 'GPS Sinyali Aranıyor...';
           },
           geoOptions
@@ -1161,7 +1170,6 @@
             if (calcSpd < 220) currentSpeedKmh = calcSpd;
           }
 
-          // 3 metreden büyük her hareketi kabul et (esnetilmiş filtre)
           if (deltaKm >= 0.003) {
             this.gpsTotalDistanceKm += deltaKm;
             this.gpsLastPosition = { latitude, longitude, timestamp: Date.now() };
@@ -1277,7 +1285,6 @@
         const cost = parseFloat((km * m.costPerKm).toFixed(2));
         const volDetail = document.getElementById('gpsModalFuelVol').textContent + ' (GPS)';
 
-        // 1. Rotalara Koordinat Dizisiyle (path) birlikte ekle
         this.data.routes.push({
           id: 'r_gps_' + Date.now(),
           vehicleId: this.activeVehicleId,
@@ -1291,7 +1298,6 @@
           path: [...this.gpsRouteCoordinates]
         });
 
-        // 2. İstenirse KM Sayaç Günlüğüne de otomatik ekle
         const addOdo = document.getElementById('gpsUpdateOdometer').checked;
         if (addOdo && km > 0) {
           const vLogs = this.data.kmLogs.filter(k => k.vehicleId === this.activeVehicleId);
@@ -1314,7 +1320,7 @@
         this.renderAll();
         this.closeModal('modalGpsTripSave');
         e.target.reset();
-        alert('GPS sürüş kaydınız ve harita rotanız başarıyla kaydedildi! Rota sekmesinden haritayı açıp inceleyebilirsiniz.');
+        alert('GPS sürüş kaydınız ve harita rotanız başarıyla kaydedildi!');
       }
 
       openSavedRouteMap(routeId) {
@@ -1354,15 +1360,141 @@
           }
 
           const poly = L.polyline(r.path, { color: '#14b8a6', weight: 5 }).addTo(this.savedMap);
-          // Başlangıç Noktası (Yeşil)
           L.circleMarker(r.path[0], { radius: 7, fillColor: '#22c55e', color: '#fff', weight: 2, fillOpacity: 1 })
             .bindPopup(`Başlangıç: ${r.from}`).addTo(this.savedMap);
-          // Bitiş Noktası (Kırmızı)
           L.circleMarker(r.path[r.path.length - 1], { radius: 7, fillColor: '#ef4444', color: '#fff', weight: 2, fillOpacity: 1 })
             .bindPopup(`Varış: ${r.to}`).addTo(this.savedMap);
 
           this.savedMap.fitBounds(poly.getBounds(), { padding: [25, 25] });
         }, 200);
+      }
+
+      /* ----------------------------------------------------
+         ANDROID APK UYUMLU YEDEKLEME & GERİ YÜKLEME MOTORU
+      ---------------------------------------------------- */
+      openBackupModal() {
+        const jsonStr = JSON.stringify(this.data);
+        const txtArea = document.getElementById('backupJsonTextarea');
+        if (txtArea) txtArea.value = jsonStr;
+        this.openModal('modalBackup');
+      }
+
+      async exportBackupFile() {
+        const jsonStr = JSON.stringify(this.data, null, 2);
+        const dateStr = new Date().toISOString().split('T')[0];
+        const fileName = `OtoTakip_Yedek_${dateStr}.json`;
+
+        // 1. Öncelik: Android Web Share API (Dosya olarak WhatsApp / Drive / İndirilenler'e kaydetme)
+        try {
+          if (navigator.canShare && window.File) {
+            const file = new File([jsonStr], fileName, { type: 'application/json' });
+            if (navigator.canShare({ files: [file] })) {
+              await navigator.share({
+                title: 'OtoTakip Pro Yedek Dosyası',
+                text: 'Araç ve yakıt takip yedeği',
+                files: [file]
+              });
+              return;
+            }
+          }
+          // Dosya paylaşımı desteklenmiyorsa metin olarak paylaşım menüsünü aç
+          if (navigator.share) {
+            await navigator.share({
+              title: fileName,
+              text: jsonStr
+            });
+            return;
+          }
+        } catch (err) {
+          console.warn('Paylaşım iptal edildi veya desteklenmiyor:', err);
+        }
+
+        // 2. Fallback: Standart Tarayıcı İndirmesi (Data URI ile)
+        try {
+          const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
+          const a = document.createElement('a');
+          a.setAttribute('href', dataUri);
+          a.setAttribute('download', fileName);
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } catch (e) {
+          this.copyBackupText();
+        }
+      }
+
+      copyBackupText() {
+        const jsonStr = JSON.stringify(this.data);
+        const txtArea = document.getElementById('backupJsonTextarea');
+        if (txtArea) {
+          txtArea.value = jsonStr;
+          txtArea.select();
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(jsonStr).then(() => {
+            alert('Yedek kodu panoya kopyalandı! WhatsApp veya Notlar uygulamanıza yapıştırarak saklayabilirsiniz.');
+          }).catch(() => {
+            document.execCommand('copy');
+            alert('Yedek kodu kopyalandı!');
+          });
+        } else {
+          document.execCommand('copy');
+          alert('Yedek kodu panoya kopyalandı!');
+        }
+      }
+
+      restoreFromTextarea() {
+        const rawText = document.getElementById('backupJsonTextarea').value.trim();
+        if (!rawText) {
+          alert('Lütfen önce yedek kodunu metin kutusuna yapıştırın!');
+          return;
+        }
+        try {
+          const parsed = JSON.parse(rawText);
+          if (!parsed.vehicles || !Array.isArray(parsed.vehicles)) {
+            alert('Geçersiz yedek kodu formatı!');
+            return;
+          }
+          if (confirm('Yapıştırdığınız yedek kodu yüklenecektir. Onaylıyor musunuz?')) {
+            this.data = parsed;
+            this.activeVehicleId = this.data.vehicles[0] ? this.data.vehicles[0].id : null;
+            this.saveStorage();
+            this.renderVehicleSelect();
+            this.renderAll();
+            this.closeModal('modalBackup');
+            alert('Verileriniz başarıyla geri yüklendi!');
+          }
+        } catch (err) {
+          alert('Yedek kodu okunamadı: ' + err.message);
+        }
+      }
+
+      handleRestoreFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const parsed = JSON.parse(e.target.result);
+            if (!parsed.vehicles || !Array.isArray(parsed.vehicles)) {
+              alert('Hatalı veya uyumsuz yedek dosyası!');
+              return;
+            }
+            if (confirm('Seçilen yedek yüklenecektir. Mevcut verileriniz bu yedekle değiştirilsin mi?')) {
+              this.data = parsed;
+              this.activeVehicleId = this.data.vehicles[0] ? this.data.vehicles[0].id : null;
+              this.saveStorage();
+              this.renderVehicleSelect();
+              this.renderAll();
+              this.closeModal('modalBackup');
+              alert('Yedek başarıyla geri yüklendi!');
+            }
+          } catch (err) {
+            alert('Dosya okunurken bir hata oluştu: ' + err.message);
+          }
+        };
+        reader.readAsText(file);
       }
 
       /* ----------------------------------------------------
@@ -1378,7 +1510,7 @@
         document.getElementById('dashCapacityBadge').innerHTML = `<i class="fa-solid fa-gas-pump"></i> Depo: ${cap} ${unit}`;
 
         const totalActualSpent = fuels.reduce((acc, cur) => acc + (Number(cur.cost) || 0), 0);
-        document.getElementById('dashTotalSpend').textContent = `${Math.round(totalActualSpent).toLocaleString('tr-TR')} ₺`;
+        document.getElementById('dashTotalSpend').textContent = `${totalActualSpent.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺`;
 
         if (fuels.length < 2) {
           document.getElementById('dashCostPerKm').innerHTML = '0.00 ₺<span style="font-size:13px; font-weight:500; color:var(--text-muted);">/km</span>';
@@ -1418,7 +1550,7 @@
             const volPer100 = totalKm > 0 ? ((sumConsumedVolume / totalKm) * 100) : 0;
             document.getElementById('dashPer100Label').textContent = '100 KM Tüketim';
             document.getElementById('dashCostPerKm').innerHTML = `${costPerKm.toFixed(2)} ₺<span style="font-size:13px; font-weight:500; color:var(--text-muted);">/km</span>`;
-            document.getElementById('dashPer100').textContent = `${volPer100.toFixed(1)} ${unit}`;
+            document.getElementById('dashPer100').textContent = `${volPer100.toFixed(2)} ${unit}`;
           }
         }
 
@@ -1434,8 +1566,8 @@
             const bznP = 100 - lpgP;
             document.getElementById('lpgBar').style.width = lpgP + '%';
             document.getElementById('benzinBar').style.width = bznP + '%';
-            document.getElementById('lpgRatio').textContent = `%${lpgP} (${Math.round(lpgCost).toLocaleString('tr-TR')} ₺)`;
-            document.getElementById('benzinRatio').textContent = `%${bznP} (${Math.round(bznCost).toLocaleString('tr-TR')} ₺)`;
+            document.getElementById('lpgRatio').textContent = `%${lpgP} (${lpgCost.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺)`;
+            document.getElementById('benzinRatio').textContent = `%${bznP} (${bznCost.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺)`;
           } else {
             document.getElementById('lpgBar').style.width = '50%';
             document.getElementById('benzinBar').style.width = '50%';
@@ -1467,13 +1599,14 @@
             const curPct = (item.tankPercent !== undefined) ? Number(item.tankPercent) : 100;
             const cap = this.getEffectiveCapacity(veh, item.subType);
             const consumed = Math.max(0, (cap * (prevPct / 100) + Number(item.volume)) - (cap * (curPct / 100)));
-            const calcPer100 = diff > 0 ? ((consumed / diff) * 100).toFixed(1) : '0';
+            const calcPer100 = diff > 0 ? ((consumed / diff) * 100).toFixed(2) : '0';
             diffKmText = `<span class="badge badge-teal">+${diff} km (~${calcPer100} ${unit}/100km)</span>`;
           }
 
           const badgeColor = item.subType === 'LPG' ? 'badge-purple' : (item.subType === 'Elektrik' ? 'badge-green' : 'badge-blue');
           const unitPrice = item.volume > 0 ? (item.cost / item.volume).toFixed(2) : '0';
           const tankPercentBadge = `<span class="badge badge-amber" style="margin-left:4px;"><i class="fa-solid fa-gauge-simple-high"></i> %${item.tankPercent || 100}</span>`;
+          const stationText = item.station ? ` • <b style="color:#cbd5e1;">${item.station}</b>` : '';
 
           const el = document.createElement('div');
           el.className = 'list-item';
@@ -1485,13 +1618,13 @@
               <div>
                 <div style="font-weight:700; font-size:14px;">${item.km.toLocaleString('tr-TR')} KM <span class="badge ${badgeColor}" style="margin-left:4px;">${item.subType || veh.yakitTuru}</span>${tankPercentBadge}</div>
                 <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
-                  ${item.date} • ${item.volume} ${unit} (Birim: ${unitPrice} ₺)
+                  ${item.date}${stationText} • ${item.volume} ${unit} (${unitPrice} ₺)
                 </div>
                 ${diffKmText ? `<div style="margin-top:4px;">${diffKmText}</div>` : ''}
               </div>
             </div>
             <div style="text-align:right;">
-              <div style="font-weight:800; font-size:15px; color:#fff;">${Number(item.cost).toLocaleString('tr-TR')} ₺</div>
+              <div style="font-weight:800; font-size:15px; color:#fff;">${Number(item.cost).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺</div>
               <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:6px;">
                 <button class="btn-edit-outline" onclick="app.openEditFuelModal('${item.id}')" title="Düzenle"><i class="fa-solid fa-pen"></i></button>
                 <button class="btn-danger-outline" onclick="app.deleteFuel('${item.id}')" title="Sil"><i class="fa-solid fa-trash"></i></button>
@@ -1570,7 +1703,7 @@
               </div>
             </div>
             <div style="text-align:right;">
-              <div style="font-weight:800; font-size:15px; color:var(--accent-teal);">${Number(r.cost).toLocaleString('tr-TR')} ₺</div>
+              <div style="font-weight:800; font-size:15px; color:var(--accent-teal);">${Number(r.cost).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺</div>
               <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:6px;">
                 ${mapBtnHtml}
                 <button class="btn-danger-outline" onclick="app.deleteRoute('${r.id}')"><i class="fa-solid fa-trash"></i></button>
@@ -1610,7 +1743,7 @@
           const isEv = veh.yakitTuru === 'Elektrik';
           const unit = isEv ? 'kWh' : 'LT';
 
-          document.getElementById('routeLiveVol').textContent = `${needVol.toFixed(1)} ${unit}`;
+          document.getElementById('routeLiveVol').textContent = `${needVol.toFixed(2)} ${unit}`;
           document.getElementById('routeLiveCost').textContent = `${totCost.toFixed(2)} ₺`;
           document.getElementById('routeLiveRateHint').textContent = `* Birim Fiyat: ${m.singlePrice.toFixed(2)} ₺/${unit}`;
         }
@@ -1673,7 +1806,7 @@
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
               <div style="font-weight:700; font-size:14px;">${sig.sirket || 'Belirtilmedi'}</div>
-              <div style="font-size:12px; color:var(--text-muted);">Bitiş: ${sig.bitis || '-'} • Prim: ${sig.tutar ? sig.tutar + ' ₺' : '-'}</div>
+              <div style="font-size:12px; color:var(--text-muted);">Bitiş: ${sig.bitis || '-'} • Prim: ${sig.tutar ? Number(sig.tutar).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺' : '-'}</div>
             </div>
             <div>${renderExpiryBadge(sigDays)}</div>
           </div>
@@ -1685,7 +1818,7 @@
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
               <div style="font-weight:700; font-size:14px;">${kas.sirket || 'Belirtilmedi'}</div>
-              <div style="font-size:12px; color:var(--text-muted);">Bitiş: ${kas.bitis || '-'} • Tutar: ${kas.tutar ? kas.tutar + ' ₺' : '-'}</div>
+              <div style="font-size:12px; color:var(--text-muted);">Bitiş: ${kas.bitis || '-'} • Tutar: ${kas.tutar ? Number(kas.tutar).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺' : '-'}</div>
             </div>
             <div>${renderExpiryBadge(kasDays)}</div>
           </div>
@@ -1696,8 +1829,8 @@
         document.getElementById('muayeneCardContent').innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <div style="font-weight:700; font-size:14px;">TÜVTÜRK Vize Bitiş: ${muay.bitis || '-'}</div>
-              <div style="font-size:12px; color:var(--text-muted);">İstasyon: ${muay.istasyon || 'Not yok'}</div>
+              <div style="font-weight:700; font-size:14px;">Vize Bitiş: ${muay.bitis || '-'}</div>
+              <div style="font-size:12px; color:var(--text-muted);">İstasyon: ${muay.istasyon || 'TÜVTÜRK'}</div>
             </div>
             <div>${renderExpiryBadge(muayDays)}</div>
           </div>
@@ -1706,10 +1839,11 @@
         const ruh = veh.docs.ruhsat || {};
         document.getElementById('ruhsatCardContent').innerHTML = `
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
-            <div><span style="color:var(--text-muted);">Şasi No:</span> <b style="color:#fff;">${ruh.sasiNo || '-'}</b></div>
+            <div style="grid-column: span 2;"><span style="color:var(--text-muted);">Şasi No:</span> <b style="color:#fff;">${ruh.sasiNo || '-'}</b></div>
             <div><span style="color:var(--text-muted);">Motor No:</span> <b style="color:#fff;">${ruh.motorNo || '-'}</b></div>
             <div><span style="color:var(--text-muted);">Seri No:</span> <b style="color:#fff;">${ruh.seriNo || '-'}</b></div>
-            <div><span style="color:var(--text-muted);">Kapasite:</span> <b style="color:#fff;">${veh.depoKapasitesi} LT</b></div>
+            <div><span style="color:var(--text-muted);">Model Yılı:</span> <b style="color:#fff;">${veh.yil || '-'}</b></div>
+            <div><span style="color:var(--text-muted);">Kapasite:</span> <b style="color:#fff;">${veh.depoKapasitesi} LT${veh.lpgKapasitesi ? ' + ' + veh.lpgKapasitesi + ' LPG' : ''}</b></div>
           </div>
         `;
 
@@ -1809,7 +1943,7 @@
 
               rowsHtml += `
                 <tr>
-                  <td>${curItem.date}</td>
+                  <td>${curItem.date}${curItem.station ? '<br><span style="color:var(--text-muted); font-size:10px;">' + curItem.station + '</span>' : ''}</td>
                   <td><b>${curItem.km.toLocaleString('tr-TR')} km</b></td>
                   <td style="color:#fff; font-weight:700;">${curUnitPrice.toFixed(2)} ₺</td>
                   <td>${changeText}</td>
@@ -1845,7 +1979,7 @@
               <table class="price-history-table">
                 <thead>
                   <tr>
-                    <th>Tarih</th>
+                    <th>Tarih / İstasyon</th>
                     <th>KM</th>
                     <th>Birim Fiyat</th>
                     <th>Fark</th>
@@ -1867,7 +2001,7 @@
 
         document.getElementById('repTotalMaintSpend').textContent = `${Math.round(totalMaintSpend).toLocaleString('tr-TR')} ₺ (${maints.length} işlem)`;
         document.getElementById('repAvgMaintSpend').textContent = maints.length > 0 ? `${Math.round(avgMaintSpend).toLocaleString('tr-TR')} ₺/servis` : '-';
-        document.getElementById('repTotalCarExpense').textContent = `${Math.round(grandTotalCarExpense).toLocaleString('tr-TR')} ₺`;
+        document.getElementById('repTotalCarExpense').textContent = `${grandTotalCarExpense.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺`;
 
         if (fuels.length < 2) {
           ['repRealCostPerKm','repDailyConsumption','repDailyKm','repDailyCost','repRefuelDistance','repOneYearKm','repRefuelRoutine','repNextRefuelDate','repFullTankRange']
@@ -1954,7 +2088,7 @@
                 <div>
                   <div style="font-weight:700; font-size:13px;">${prev.date} ➔ ${curr.date} <span class="badge ${curr.subType === 'LPG' ? 'badge-purple' : 'badge-blue'}">${curr.subType || veh.yakitTuru}</span></div>
                   <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
-                    Mesafe: <b>${diffKm} km</b> • Tüketilen: <b>${consumedVol.toFixed(1)} ${unit}</b> (%${pPct} ➔ %${cPct})
+                    Mesafe: <b>${diffKm} km</b> • Tüketilen: <b>${consumedVol.toFixed(2)} ${unit}</b> (%${pPct} ➔ %${cPct})
                   </div>
                   <div style="margin-top:4px;">
                     <span class="badge badge-teal">${per100Km} ${unit}/100km</span>
@@ -1963,7 +2097,7 @@
                 </div>
               </div>
               <div style="text-align:right;">
-                <div style="font-weight:800; font-size:14px; color:#fff;">${Number(curr.cost).toLocaleString('tr-TR')} ₺</div>
+                <div style="font-weight:800; font-size:14px; color:#fff;">${Number(curr.cost).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺</div>
               </div>
             `;
             intervalContainer.appendChild(itemDiv);
@@ -1971,57 +2105,16 @@
         }
       }
 
-      downloadBackup() {
-        const jsonStr = JSON.stringify(this.data, null, 2);
-        const blob = new Blob([jsonStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        const dateStr = new Date().toISOString().split('T')[0];
-        a.href = url;
-        a.download = `OtoTakip_Yedek_${dateStr}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
-
-      handleRestoreFile(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          try {
-            const parsed = JSON.parse(e.target.result);
-            if (!parsed.vehicles || !Array.isArray(parsed.vehicles)) {
-              alert('Hatalı veya uyumsuz yedek dosyası!');
-              return;
-            }
-            if (confirm('Seçilen yedek yüklenecektir. Mevcut verileriniz bu yedekle değiştirilsin mi?')) {
-              this.data = parsed;
-              this.activeVehicleId = this.data.vehicles[0] ? this.data.vehicles[0].id : null;
-              this.saveStorage();
-              this.renderVehicleSelect();
-              this.renderAll();
-              this.closeModal('modalBackup');
-              alert('Yedek başarıyla geri yüklendi!');
-            }
-          } catch (err) {
-            alert('Dosya okunurken bir hata oluştu: ' + err.message);
-          }
-        };
-        reader.readAsText(file);
-      }
-
       openAddVehicleModal() {
         document.getElementById('modalVehicleTitle').textContent = 'Yeni Araç Ekle';
         document.getElementById('vEditId').value = '';
         document.getElementById('vPlaka').value = '';
+        document.getElementById('vYear').value = '2026';
         document.getElementById('vModel').value = '';
-        document.getElementById('vType').value = 'Dizel';
-        document.getElementById('vCapMain').value = '50';
+        document.getElementById('vType').value = 'Benzin';
+        document.getElementById('vCapMain').value = '47';
         document.getElementById('vCapLpg').value = '';
-        this.handleVehicleTypeChange('Dizel');
+        this.handleVehicleTypeChange('Benzin');
         document.getElementById('btnVehicleSubmit').innerHTML = '<i class="fa-solid fa-check"></i> Aracı Kaydet';
         document.getElementById('btnDeleteVehicle').style.display = 'none';
         this.openModal('modalVehicle');
@@ -2033,6 +2126,7 @@
         document.getElementById('modalVehicleTitle').textContent = 'Aracı Düzenle';
         document.getElementById('vEditId').value = veh.id;
         document.getElementById('vPlaka').value = veh.plaka;
+        document.getElementById('vYear').value = veh.yil || '';
         document.getElementById('vModel').value = veh.markaModel;
         document.getElementById('vType').value = veh.yakitTuru;
         document.getElementById('vCapMain').value = veh.depoKapasitesi;
@@ -2047,6 +2141,7 @@
         e.preventDefault();
         const editId = document.getElementById('vEditId').value;
         const plaka = document.getElementById('vPlaka').value.trim().toUpperCase();
+        const yil = parseInt(document.getElementById('vYear').value) || '';
         const model = document.getElementById('vModel').value.trim();
         const type = document.getElementById('vType').value;
         const cap = parseFloat(document.getElementById('vCapMain').value) || 50;
@@ -2056,6 +2151,7 @@
           const veh = this.data.vehicles.find(v => v.id === editId);
           if (veh) {
             veh.plaka = plaka;
+            veh.yil = yil;
             veh.markaModel = model;
             veh.yakitTuru = type;
             veh.depoKapasitesi = cap;
@@ -2065,6 +2161,7 @@
           const newVeh = {
             id: 'v_' + Date.now(),
             plaka: plaka,
+            yil: yil,
             markaModel: model,
             yakitTuru: type,
             depoKapasitesi: cap,
@@ -2115,10 +2212,11 @@
         const fuels = this.getVehicleFuels();
         const lastKm = fuels.length > 0 ? fuels[fuels.length - 1].km : null;
         document.getElementById('fKmHint').textContent = lastKm ? `* Son girilen km: ${lastKm.toLocaleString('tr-TR')}` : '';
-        document.getElementById('lblFuelVolume').textContent = (veh && veh.yakitTuru === 'Elektrik') ? 'Şarj Miktarı (kWh)' : 'Alınan Miktar (Litre)';
+        document.getElementById('lblFuelVolume').textContent = (veh && veh.yakitTuru === 'Elektrik') ? 'Şarj Miktarı (kWh)' : 'Alınan Miktar (LT)';
         document.getElementById('dualFuelPickerGroup').style.display = (veh && veh.yakitTuru === 'Benzin + LPG') ? 'block' : 'none';
         
         document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('fStation').value = '';
         document.getElementById('fKm').value = '';
         document.getElementById('fVolume').value = '';
         document.getElementById('fCost').value = '';
@@ -2142,6 +2240,7 @@
         document.getElementById('btnFuelSubmit').innerHTML = '<i class="fa-solid fa-check"></i> Değişiklikleri Kaydet';
 
         document.getElementById('fDate').value = fuel.date || '';
+        document.getElementById('fStation').value = fuel.station || '';
         document.getElementById('fKm').value = fuel.km || '';
         document.getElementById('fVolume').value = fuel.volume || '';
         document.getElementById('fCost').value = fuel.cost || '';
@@ -2161,8 +2260,8 @@
           document.getElementById('dualFuelPickerGroup').style.display = 'none';
         }
 
-        document.getElementById('lblFuelVolume').textContent = (veh && veh.yakitTuru === 'Elektrik') ? 'Şarj Miktarı (kWh)' : 'Alınan Miktar (Litre)';
-        document.getElementById('fKmHint').textContent = '* Kilometre ve dolum bilgilerini güncelleyebilirsiniz.';
+        document.getElementById('lblFuelVolume').textContent = (veh && veh.yakitTuru === 'Elektrik') ? 'Şarj Miktarı (kWh)' : 'Alınan Miktar (LT)';
+        document.getElementById('fKmHint').textContent = '* Kilometre, istasyon ve dolum bilgilerini güncelleyebilirsiniz.';
         this.updateFuelModalCapacityInfo();
         this.openModal('modalFuel');
       }
@@ -2172,6 +2271,7 @@
         const editId = document.getElementById('fEditId').value;
         const veh = this.getActiveVehicle();
         const date = document.getElementById('fDate').value;
+        const station = document.getElementById('fStation').value.trim();
         const km = parseFloat(document.getElementById('fKm').value);
         const vol = parseFloat(document.getElementById('fVolume').value);
         const cost = parseFloat(document.getElementById('fCost').value);
@@ -2187,6 +2287,7 @@
           const item = this.data.fuels.find(f => f.id === editId);
           if (item) {
             item.date = date;
+            item.station = station;
             item.km = km;
             item.volume = vol;
             item.cost = cost;
@@ -2199,6 +2300,7 @@
             vehicleId: this.activeVehicleId,
             subType: subType,
             date: date,
+            station: station,
             km: km,
             volume: vol,
             cost: cost,
@@ -2341,7 +2443,7 @@
             <form onsubmit="app.saveDocFields(event, 'sigorta')">
               <div class="form-group"><label class="form-label">Sigorta Şirketi</label><input type="text" class="form-control" id="edSirket" value="${cur.sirket || ''}"></div>
               <div class="form-group"><label class="form-label">Poliçe Bitiş Tarihi</label><input type="date" class="form-control" id="edBitis" value="${cur.bitis || ''}" required></div>
-              <div class="form-group"><label class="form-label">Prim Tutarı (TL)</label><input type="number" class="form-control" id="edTutar" value="${cur.tutar || ''}"></div>
+              <div class="form-group"><label class="form-label">Prim Tutarı (TL)</label><input type="number" step="0.01" class="form-control" id="edTutar" value="${cur.tutar || ''}"></div>
               <button type="submit" class="btn-primary"><i class="fa-solid fa-save"></i> Sigorta Bilgisini Kaydet</button>
             </form>
           `;
@@ -2352,7 +2454,7 @@
             <form onsubmit="app.saveDocFields(event, 'kasko')">
               <div class="form-group"><label class="form-label">Kasko Şirketi</label><input type="text" class="form-control" id="edSirket" value="${cur.sirket || ''}"></div>
               <div class="form-group"><label class="form-label">Poliçe Bitiş Tarihi</label><input type="date" class="form-control" id="edBitis" value="${cur.bitis || ''}" required></div>
-              <div class="form-group"><label class="form-label">Tutar (TL)</label><input type="number" class="form-control" id="edTutar" value="${cur.tutar || ''}"></div>
+              <div class="form-group"><label class="form-label">Tutar (TL)</label><input type="number" step="0.01" class="form-control" id="edTutar" value="${cur.tutar || ''}"></div>
               <button type="submit" class="btn-primary"><i class="fa-solid fa-save"></i> Kasko Bilgisini Kaydet</button>
             </form>
           `;
