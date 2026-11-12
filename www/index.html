@@ -454,7 +454,7 @@
     </div>
   </div>
 
-  <!-- Modal: Backup, Restore & EXCEL (.CSV) EXPORT -->
+  <!-- Modal: Backup, Restore, Excel (.CSV) & JSON -->
   <div class="modal-overlay" id="modalBackup">
     <div class="modal-box">
       <div class="modal-header">
@@ -462,21 +462,21 @@
         <button class="btn-close" onclick="app.closeModal('modalBackup')">&times;</button>
       </div>
       <div style="display:flex; flex-direction:column; gap:12px;">
-        <!-- YENİ: EXCEL (.CSV) OLARAK DIŞA AKTAR -->
+        <!-- Excel CSV Aktar -->
         <div class="card" style="margin-bottom:0; background:#0f172a; border-color:#16a34a;">
           <div style="font-weight:700; font-size:13px; margin-bottom:4px;"><i class="fa-solid fa-file-excel" style="color:#22c55e;"></i> Excel Tablosu Olarak Aktar (.csv)</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Tüm araçlarınızın yakıt, bakım, rota ve KM kayıtlarını satır satır Türkçe Excel tablosu olarak indirin veya paylaşın.</div>
-          <button class="btn-excel" onclick="app.exportExcelCsv()"><i class="fa-solid fa-table"></i> Excel (.csv) İndir / Paylaş</button>
+          <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Tüm yakıt, bakım ve rota kayıtlarını Türkçe Excel formatında indirin veya paylaşın.</div>
+          <button class="btn-excel" onclick="app.exportExcelCsv()"><i class="fa-solid fa-table"></i> Excel (.csv) Dosyasını Paylaş / İndir</button>
         </div>
 
-        <!-- Yöntem 1: JSON Dosya Paylaş / İndir -->
+        <!-- JSON Dosya Paylaş / İndir -->
         <div class="card" style="margin-bottom:0; background:#0f172a;">
           <div style="font-weight:700; font-size:13px; margin-bottom:4px;"><i class="fa-solid fa-share-nodes" style="color:var(--accent-teal);"></i> Tam Sistem Yedeği (.json)</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Uygulama verilerini başka telefona taşımak için JSON yedeği olarak kaydedin.</div>
-          <button class="btn-primary" onclick="app.exportBackupFile()"><i class="fa-solid fa-file-export"></i> JSON Yedeği Paylaş / İndir</button>
+          <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Uygulama verilerini başka telefona taşımak için yedek dosyası oluşturun.</div>
+          <button class="btn-primary" onclick="app.exportBackupFile()"><i class="fa-solid fa-file-export"></i> JSON Yedeğini Paylaş / İndir</button>
         </div>
 
-        <!-- Yöntem 2: Kopyala / Yapıştır -->
+        <!-- Kopyala / Yapıştır -->
         <div class="card" style="margin-bottom:0; background:#0f172a;">
           <div style="font-weight:700; font-size:13px; margin-bottom:4px;"><i class="fa-solid fa-copy" style="color:var(--accent-amber);"></i> Yedek Kodunu Kopyala / Yapıştır</div>
           <textarea id="backupJsonTextarea" class="form-control" rows="2" style="font-size:10px; font-family:monospace; margin-bottom:8px;" placeholder="Yedek JSON metni..."></textarea>
@@ -486,7 +486,7 @@
           </div>
         </div>
 
-        <!-- Yöntem 3: Dosya Seçerek Yükle -->
+        <!-- Dosyadan Geri Yükle -->
         <div class="card" style="margin-bottom:0; background:#0f172a;">
           <div style="font-weight:700; font-size:13px; margin-bottom:4px;"><i class="fa-solid fa-upload" style="color:var(--accent-blue);"></i> Dosyadan Geri Yükle (.json)</div>
           <input type="file" id="backupFileInput" accept=".json,application/json,text/plain" style="display:none;" onchange="app.handleRestoreFile(event)">
@@ -764,7 +764,6 @@
         if (raw) {
           try { return JSON.parse(raw); } catch (e) { console.error(e); }
         }
-        // KULLANICININ PAYLAŞTIĞI KALICI ARAÇ VE YAKIT VERİLERİ
         return {
           vehicles: [
             {
@@ -799,12 +798,10 @@
             }
           ],
           fuels: [
-            // 1. Araç: Honda Civic
             { id: 'f_c1', vehicleId: 'v_civic', subType: 'Benzin', date: '2026-11-04', station: 'İzmir Otoban Shell', km: 51583, volume: 18.36, cost: 1500.00, tankPercent: 60 },
             { id: 'f_c2', vehicleId: 'v_civic', subType: 'LPG', date: '2026-11-04', station: 'İzmir Otoban Shell', km: 51583, volume: 24.95, cost: 1285.17, tankPercent: 100 },
             { id: 'f_c3', vehicleId: 'v_civic', subType: 'Benzin', date: '2026-11-07', station: 'Denizli Lunapark Opet', km: 51826, volume: 19.66, cost: 1500.00, tankPercent: 60 },
             
-            // 2. Araç: APEC PS4
             { id: 'f_a1', vehicleId: 'v_apec', subType: 'Benzin', date: '2026-09-09', station: 'Denizli Lunapark Opet', km: 2, volume: 5.00, cost: 393.30, tankPercent: 100 },
             { id: 'f_a2', vehicleId: 'v_apec', subType: 'Benzin', date: '2026-09-20', station: 'Denizli Cinkya Opet', km: 100, volume: 2.50, cost: 200.88, tankPercent: 100 },
             { id: 'f_a3', vehicleId: 'v_apec', subType: 'Benzin', date: '2026-10-12', station: 'Denizli Lunapark Opet', km: 199, volume: 2.69, cost: 230.00, tankPercent: 100 },
@@ -1022,7 +1019,7 @@
       }
 
       /* ----------------------------------------------------
-         GELİŞMİŞ GPS + CAPACITOR NATIVE + CANLI HARİTA MOTORU
+         GPS SÜRÜŞ MOTORU
       ---------------------------------------------------- */
       updateGpsRateSummary() {
         const veh = this.getActiveVehicle();
@@ -1097,12 +1094,7 @@
           document.getElementById('gpsTimeVal').textContent = `${hrs}:${mins}:${secs}`;
         }, 1000);
 
-        const geoOptions = {
-          enableHighAccuracy: true,
-          timeout: 20000,
-          maximumAge: 0
-        };
-
+        const geoOptions = { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 };
         const CapGeo = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Geolocation;
         if (CapGeo) {
           try {
@@ -1122,9 +1114,7 @@
               if (pos) this.handleGpsUpdate(pos);
             });
             return;
-          } catch (e) {
-            console.warn('Capacitor Geolocation fallback:', e);
-          }
+          } catch (e) {}
         }
 
         if (!navigator.geolocation) {
@@ -1136,17 +1126,13 @@
         this.usingCapGeolocation = false;
         navigator.geolocation.getCurrentPosition(
           (pos) => this.handleGpsUpdate(pos),
-          () => {
-            document.getElementById('gpsStatusText').textContent = 'Konum İzni / Açık Alan Gerekli';
-          },
+          () => { document.getElementById('gpsStatusText').textContent = 'Konum İzni / Açık Alan Gerekli'; },
           geoOptions
         );
 
         this.gpsWatchId = navigator.geolocation.watchPosition(
           (pos) => this.handleGpsUpdate(pos),
-          () => {
-            document.getElementById('gpsStatusText').textContent = 'GPS Sinyali Aranıyor...';
-          },
+          () => { document.getElementById('gpsStatusText').textContent = 'GPS Sinyali Aranıyor...'; },
           geoOptions
         );
       }
@@ -1377,7 +1363,7 @@
       }
 
       /* ----------------------------------------------------
-         EXCEL (.CSV) & JSON DIŞA AKTARMA VE YEDEKLEME MOTORU
+         EXCEL (.CSV) & JSON AKTARIM MOTORU
       ---------------------------------------------------- */
       openBackupModal() {
         const jsonStr = JSON.stringify(this.data);
@@ -1398,7 +1384,6 @@
       }
 
       async exportExcelCsv() {
-        // Satır satır (Düz Liste Formatı - Türkçe Excel için ; ayraçlı ve UTF-8 BOM başlıklı)
         const headers = [
           'Kayıt Tipi',
           'Plaka',
@@ -1418,7 +1403,6 @@
         const vehMap = {};
         this.data.vehicles.forEach(v => { vehMap[v.id] = v; });
 
-        // 1. Yakıt Alımları (Satır satır)
         this.data.fuels.forEach(f => {
           const v = vehMap[f.vehicleId] || {};
           const unitP = (f.volume && f.volume > 0) ? (f.cost / f.volume).toFixed(2) : '';
@@ -1438,7 +1422,6 @@
           ].join(';'));
         });
 
-        // 2. Bakım ve Servis Kayıtları (Satır satır)
         this.data.maintenances.forEach(m => {
           const v = vehMap[m.vehicleId] || {};
           rows.push([
@@ -1457,7 +1440,6 @@
           ].join(';'));
         });
 
-        // 3. Seyahat ve Rota Kayıtları (Satır satır)
         this.data.routes.forEach(r => {
           const v = vehMap[r.vehicleId] || {};
           rows.push([
@@ -1476,7 +1458,6 @@
           ].join(';'));
         });
 
-        // 4. KM Sayaç Günlüğü (Satır satır)
         this.data.kmLogs.forEach(k => {
           const v = vehMap[k.vehicleId] || {};
           rows.push([
@@ -1495,12 +1476,10 @@
           ].join(';'));
         });
 
-        // UTF-8 BOM ile birleştir
         const csvContent = '\uFEFF' + rows.join('\r\n');
         const dateStr = new Date().toISOString().split('T')[0];
         const fileName = `OtoTakip_Excel_Rapor_${dateStr}.csv`;
 
-        // Android Paylaşım Penceresi (WhatsApp, Drive, Cihaza Kaydet)
         try {
           if (navigator.canShare && window.File) {
             const file = new File([csvContent], fileName, { type: 'text/csv;charset=utf-8' });
@@ -1513,11 +1492,8 @@
               return;
             }
           }
-        } catch (err) {
-          console.warn('CSV paylaşım hatası:', err);
-        }
+        } catch (err) {}
 
-        // Tarayıcı / WebView Fallback İndirmesi
         try {
           const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
           const a = document.createElement('a');
@@ -1527,7 +1503,7 @@
           a.click();
           document.body.removeChild(a);
         } catch (e) {
-          alert('CSV oluşturuldu ancak cihaz indirmeyi engelledi.');
+          alert('CSV dosyası oluşturulamadı.');
         }
       }
 
@@ -1549,15 +1525,10 @@
             }
           }
           if (navigator.share) {
-            await navigator.share({
-              title: fileName,
-              text: jsonStr
-            });
+            await navigator.share({ title: fileName, text: jsonStr });
             return;
           }
-        } catch (err) {
-          console.warn('Paylaşım iptal edildi:', err);
-        }
+        } catch (err) {}
 
         try {
           const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
@@ -1581,7 +1552,7 @@
         }
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(jsonStr).then(() => {
-            alert('Yedek kodu panoya kopyalandı! WhatsApp veya Notlar uygulamanıza yapıştırarak saklayabilirsiniz.');
+            alert('Yedek kodu panoya kopyalandı!');
           }).catch(() => {
             document.execCommand('copy');
             alert('Yedek kodu kopyalandı!');
